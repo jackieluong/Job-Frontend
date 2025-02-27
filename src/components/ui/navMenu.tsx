@@ -1,3 +1,5 @@
+import React from "react";
+
 const NavMenu = () => {
   const menuItems = [
     { name: "Việc làm", href: "#" },
