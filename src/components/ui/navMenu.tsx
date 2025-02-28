@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 
 import { useState } from "react";
@@ -99,6 +100,18 @@ const menuItems: MenuItem[] = [
 
 const NavMenu: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+=======
+import React from "react";
+
+const NavMenu = () => {
+  const menuItems = [
+    { name: "Việc làm", href: "#" },
+    { name: "Hồ sơ & CV", href: "#", active: true },
+    { name: "Công cụ", href: "#" },
+    { name: "Cẩm nang nghề nghiệp", href: "#" },
+    { name: "TopCV Pro", href: "#", badge: "Pro" },
+  ];
+>>>>>>> 3650e7b37e4a0211ed14a81dc1cb081b3c6881a6
 
   return (
     <nav>

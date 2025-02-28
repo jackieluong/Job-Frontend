@@ -1,0 +1,36 @@
+{
+    "extends": [
+        "next/core-web-vitals",
+        "next/typescript",
+        "prettier"
+    ],
+    "plugins": [
+        "react",
+        "prettier",
+        "jest"
+    ],
+    "rules": {
+        "indent": [
+            2,
+            2,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "@typescript-eslint/ban-ts-comment": "off",
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ],
+        "import/order": [
+            "error",
+            {
+                "alphabetize": {
+                    "order": "asc"
+                }
+            }
+        ]
+    }
+}
