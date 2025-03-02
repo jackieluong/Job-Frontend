@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 "use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-// import x from "@style/navmenu.module.css";
-import x from "../../style/navmenu.module.css";
 import { 
   Briefcase, 
   FileText, 
@@ -15,8 +11,7 @@ import {
   GraduationCap, 
   Layers 
 } from "lucide-react";
-import DropdownMenu from "@/components/ui/dropmenu";
-
+import DropdownMenu from "@/components/ui/dropmenu"; // Đảm bảo component này có sẵn và hoạt động đúng
 
 const iconMap: Record<string, JSX.Element> = {
   briefcase: <Briefcase size={18} className="text-green-500" />,
@@ -29,6 +24,11 @@ const iconMap: Record<string, JSX.Element> = {
   layers: <Layers size={18} className="text-green-500" />,
 };
 
+interface DropdownItem {
+  name: string;
+  href: string;
+  icon: string;
+}
 
 interface MenuItem {
   name: string;
@@ -36,7 +36,7 @@ interface MenuItem {
   hasDropdown?: boolean;
   active?: boolean;
   badge?: string;
-  dropdownItems?: { name: string; href: string , icon: string}[];
+  dropdownItems?: DropdownItem[];
 }
 
 const menuItems: MenuItem[] = [
@@ -96,46 +96,19 @@ const menuItems: MenuItem[] = [
   { name: "TopCV Pro", href: "#", badge: "Pro" }
 ];
 
-
-
 const NavMenu: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-=======
-import React from "react";
-
-const NavMenu = () => {
-  const menuItems = [
-    { name: "Việc làm", href: "#" },
-    { name: "Hồ sơ & CV", href: "#", active: true },
-    { name: "Công cụ", href: "#" },
-    { name: "Cẩm nang nghề nghiệp", href: "#" },
-    { name: "TopCV Pro", href: "#", badge: "Pro" },
-  ];
->>>>>>> 3650e7b37e4a0211ed14a81dc1cb081b3c6881a6
 
   return (
     <nav>
       <ul className="flex space-x-6 relative">
         {menuItems.map((item, index) => (
-    
-          <li key={index} className="relative group"
-
-              onMouseEnter={() => {
-  if (item.hasDropdown && activeDropdown !== item.name) {
-    setActiveDropdown(item.name);
-    console.log("Hover vào:", item.name);
-  }
-}}
-onMouseLeave={() => {
-  if (item.hasDropdown && activeDropdown !== item.name) {
-    setActiveDropdown(item.name);
-    console.log("Rời chuột khỏi:", item.name);
-  }
-}}
-      
+          <li
+            key={index}
+            className="relative group"
+            onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
+            onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
           >
-          
-      
             <Link
               href={item.href}
               className={`text-gray-800 hover:text-green-600 ${
@@ -150,40 +123,15 @@ onMouseLeave={() => {
               )}
             </Link>
 
-            
-    {item.hasDropdown && activeDropdown === item.name && (
-  <>
-    {console.log("Hiển thị dropdown:", item.name)}
-      <DropdownMenu
-    items={item.dropdownItems?.map((dropdown) => ({
-      ...dropdown,
-      icon: iconMap[dropdown.icon], // Truyền JSX element thay vì string
-    })) ?? []}
-    isActive={activeDropdown === item.name} // ✅ Truyền trạng thái active
-  />
-  </>
-)}
-
-
-            {/* Dropdown Menu */}
-              {/* {item.hasDropdown && (
-             <ul
-  className={`absolute left-0 top-full mt-2 w-[220px] bg-white rounded-lg border border-gray-300 shadow-lg 
-  opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-in-out 
-  ${activeDropdown === item.name ? "opacity-100 visible translate-y-0" : ""}`}
->
-   {item.dropdownItems?.map((dropdown, idx) => (
-                  <li key={idx} className="flex items-center px-4 py-2 hover:bg-gray-100">
-                    {iconMap[dropdown.icon] || null} 
-                    <Link href={dropdown.href} className="ml-3 text-gray-800">
-                      {dropdown.name}
-                    </Link>
-                  </li>
-                    ))}
-                    </ul>
-            )} */}
-
-
+            {item.hasDropdown && activeDropdown === item.name && (
+              <DropdownMenu
+                items={item.dropdownItems?.map((dropdown) => ({
+                  ...dropdown,
+                  icon: iconMap[dropdown.icon], // Truyền JSX element thay vì string
+                })) ?? []}
+                isActive={activeDropdown === item.name} // ✅ Truyền trạng thái active
+              />
+            )}
           </li>
         ))}
       </ul>
