@@ -1,0 +1,27 @@
+import Link from 'next/link';
+
+const NavUser = () => {
+  return (
+    <nav className="flex justify-end space-x-4 p-4">
+      <Link href="/login">
+        <button className="border border-green-500 text-green-500 px-4 py-2 rounded-lg hover:bg-green-50 transition">
+          Đăng nhập
+        </button>
+      </Link>
+      
+      <Link href="/register">
+        <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+          Đăng ký
+        </button>
+      </Link>
+
+      <Link href="/recruit">
+        <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition">
+          Đăng tuyển & tìm hồ sơ
+        </button>
+      </Link>
+    </nav>
+  );
+};
+
+export default NavUser;

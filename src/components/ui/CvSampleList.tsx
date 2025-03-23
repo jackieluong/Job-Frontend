@@ -1,3 +1,4 @@
+import React from "react";
 import CardCv from "@/components/ui/cardCv";
 import Image from "next/image";
 
