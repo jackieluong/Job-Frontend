@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatDate } from '@/lib/utils';
 import CVDialog, { CVDialogRef } from './CVDialog';
+import page from './page';
 
 export type CV = {
   id: string;
@@ -124,13 +125,13 @@ export default function CVListTab({ job }: CVListTabProps) {
           },
       ];
     const [cvStatus, setCvStatus] = useState<string>(defaultOption);
-    const [currentPage, setCurrentPage] = useState(1); // Track the current page
-    
+    const [currentPage, setCurrentPage] = useState(0); // Track the current page
+    const [pageSize, setPageSize] = React.useState(5); // Store page 
     const [cvs, setCvs] = useState<CV[]>(cvsData);
 
     const handleCVStatusChange = (value: string) => {
       setCvStatus(value);
-      setCurrentPage(1);
+      setCurrentPage(0);
     }
     const handleChangeStatus = (cv: CV, newStatus: string) =>{
       console.log(cv);
@@ -145,6 +146,19 @@ export default function CVListTab({ job }: CVListTabProps) {
 
     
  const columns: ColumnDef<CV>[] = [
+        
+        {
+          accessorKey: "jobTitle",
+          header: "Vị trí",
+          cell: ({ row }) => (
+            
+              <div className="font-medium break-words ">
+                {row.getValue("jobTitle")}
+              </div>
+            
+      
+          ),
+        },
         {
           accessorKey: "name",
           header: "Ứng viên",
@@ -155,19 +169,6 @@ export default function CVListTab({ job }: CVListTabProps) {
             
           ),
         },
-        {
-          accessorKey: "jobTitle",
-          header: "Vị trí",
-          cell: ({ row }) => (
-            
-              <div className=" break-words ">
-                {row.getValue("jobTitle")}
-              </div>
-            
-      
-          ),
-        },
-        
         {
           accessorKey: "email",
           header: "Thông tin liên hệ",
@@ -268,7 +269,10 @@ export default function CVListTab({ job }: CVListTabProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={data} total={cvs.length} currentPage={currentPage} onPageChange={setCurrentPage} />
+          <DataTable columns={columns} data={data} 
+          total={cvs.length} currentPage={currentPage} 
+          onPageChange={setCurrentPage} pageSize={pageSize} onPageSizeChange={setPageSize}
+        />
         </CardContent>
       </Card>
 

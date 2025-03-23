@@ -18,7 +18,7 @@ import {
   List,
   Pencil,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import React, { useState } from 'react';
 import CVListTab from './CVListTab';
@@ -50,8 +50,12 @@ const job: JobPostingInfo = {
 
 export default function page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState(0);
+  const activeTabParam = Number.parseInt(searchParams.get('activeTab') || '0');
+
+  
+  const [activeTab, setActiveTab] = useState(activeTabParam || 0);
   // const { id } = router.query;
   const handleClickEdit = () => {
     router.push(`/recruiter/post/create`);
@@ -63,14 +67,25 @@ export default function page() {
 
   const tabs = [
     {
+      key:"detail",
       title: 'Tin tuyển dụng',
       component: <DetailTab job={job} handleClickViewCV={handleClickViewCV}  />,
     },
-    { title: 'Danh sách CV', component: <CVListTab  job={job}/> },
+    {
+      key:"cvList", 
+      title: 'Danh sách CV', 
+      component: <CVListTab  job={job}/> 
+    },
     // { title: 'Quyền lợi', component: <Benefit /> },
     // { title: 'Thông tin liên hệ', component: <Contact /> },
   ];
 
+  // const tabs = new Map([
+  //   ["detail", { title: "Tin tuyển dụng", component: <DetailTab job={job} handleClickViewCV={handleClickViewCV} /> }],
+  //   ["cvList", { title: "Danh sách CV", component: <CVListTab job={job} /> }],
+  //   // ["benefit", { title: "Quyền lợi", component: <Benefit /> }],
+  //   // ["contact", { title: "Thông tin liên hệ", component: <Contact /> }],
+  // ]);
   return (
     <div>
       <Card className="mx-auto w-3/4 mb-5">

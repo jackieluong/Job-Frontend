@@ -59,6 +59,8 @@ const defaultOption = "ALL";
 export default function page(props: pageProps) {
 
     const [postStatus, setPostStatus] = useState<string>(defaultOption);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
 
     const data = posts.filter((post) => {
         if (postStatus === defaultOption) {
@@ -95,7 +97,10 @@ export default function page(props: pageProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                <DataTable columns={ columns } data={data} total={posts.length} />
+                <DataTable columns={ columns } data={data} total={posts.length} 
+                currentPage={currentPage} onPageChange={setCurrentPage}
+                pageSize={pageSize} onPageSizeChange={setPageSize}
+                />
                 </CardContent>
             </Card>
         </div>
