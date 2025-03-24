@@ -22,6 +22,7 @@ import {
   User,
   List,
   Pencil,
+  Hourglass,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -41,7 +42,7 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
  
   return (
     <div>
-      <Card className="">
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Tin tuyển dụng</CardTitle>
         </CardHeader>
@@ -63,8 +64,18 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
                   <div>{job.district}</div>
                 </div>
               </div>
-            </div>
 
+              <div className="flex gap-2">
+                <Hourglass className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
+                <div>
+                  <div className="text-gray-600 font-bold">Kinh nghiệm</div>
+                  <div>{job.experience} năm</div>
+                </div>
+              </div>
+              
+
+            </div>
+            
             {/* Column 2 */}
             <div className="flex flex-col gap-4">
               <div className="flex gap-2">
@@ -77,8 +88,8 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
               <div className="flex gap-2">
                 <Calendar className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
-                  <div className="text-gray-600 font-bold">Hạn nộp</div>
-                  <div>{job.deadline}</div>
+                  <div className="text-gray-600 font-bold">Ngày cập nhật</div>
+                  <div>{job.updatedAt}</div>
                 </div>
               </div>
               <div className="flex gap-2">

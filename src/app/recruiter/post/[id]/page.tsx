@@ -17,6 +17,9 @@ import {
   Clock,
   List,
   Pencil,
+  Users2,
+  UsersRound,
+  Eye,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -44,9 +47,10 @@ const job: JobPostingInfo = {
   createdAt: '2025-03-20',
   updatedAt: '2025-03-20',
   status: 'OPEN',
+  view: 40,
 };
 
- 
+ const totalCvs = 20;
 
 export default function page() {
   const router = useRouter();
@@ -108,6 +112,22 @@ export default function page() {
               </div>
             </div>
             <div className="flex gap-2 items-center">
+              <Users2 className="h-10 w-10 text-white rounded-full mt-1 mr-2 bg-green-500  p-2" />
+
+              <div className="flex flex-col gap-1">
+                <div className="font-semibold">Tổng số CV</div>
+                <div>{totalCvs} </div>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Eye className="h-10 w-10 text-white rounded-full mt-1 mr-2 bg-green-500  p-2" />
+
+              <div className="flex flex-col gap-1">
+                <div className="font-semibold">Số lượt xem tin</div>
+                <div>{job.view} </div>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
               <MapPin className="h-10 w-10 text-white rounded-full mt-1 mr-2 bg-green-500  p-2" />
 
               <div className="flex flex-col gap-1">
@@ -115,14 +135,15 @@ export default function page() {
                 <div>{job.province}</div>
               </div>
             </div>
-            <div className="flex gap-2 items-center">
+            {/* <div className="flex gap-2 items-center">
               <Hourglass className="h-10 w-10 text-white rounded-full mt-1 mr-2 bg-green-500  p-2" />
 
               <div className="flex flex-col gap-1">
                 <div className="font-semibold">Kinh nghiệm</div>
                 <div>{job.experience} năm</div>
               </div>
-            </div>
+            </div> */}
+
           </div>
 
           <div className="mt-4 text-left">
@@ -168,7 +189,7 @@ export default function page() {
         </div>
 
         {/* Tab Content */}
-        <div className="p-4">{tabs[activeTab].component}</div>
+        <div className="py-4">{tabs[activeTab].component}</div>
       </div>
         
 

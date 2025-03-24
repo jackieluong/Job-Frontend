@@ -1,5 +1,5 @@
 export interface JobPostingInfo {
-  id: string;
+  id?: string;
   title: string;
   industry: string;
     province: string;
@@ -17,7 +17,7 @@ export interface JobPostingInfo {
     createdAt: string;
     updatedAt: string;
     status: "OPEN" | "PENDING" | "CLOSED" | "REJECTED";
-
+    view?: number;
 }
 
 

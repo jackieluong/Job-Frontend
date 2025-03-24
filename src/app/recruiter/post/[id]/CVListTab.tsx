@@ -134,12 +134,21 @@ export default function CVListTab({ job }: CVListTabProps) {
       setCurrentPage(0);
     }
     const handleChangeStatus = (cv: CV, newStatus: string) =>{
-      console.log(cv);
+      
       setCvs((prevCvs) =>
         prevCvs.map((item) =>
           item.id === cv.id ? { ...item, status: newStatus } : item
         )
       );
+    }
+
+    const handleClickViewCV = (cv: CV) => {
+      if(cv.status === "PENDING"){
+        handleChangeStatus(cv, "REVIEWED");
+      }
+      
+      cvDialogRef.current?.openDialog(cv);
+
     }
     // const [selectedCV, setSelectedCV] = useState<CV | null>(null);
     const cvDialogRef = useRef<CVDialogRef>(null);
@@ -213,7 +222,7 @@ export default function CVListTab({ job }: CVListTabProps) {
             return (
               <div className="flex gap-2">
                 
-                  <Button size="sm" variant="outline" onClick={() => cvDialogRef.current?.openDialog(row.original)}>Xem</Button>
+                  <Button size="sm" variant="outline" onClick={() => handleClickViewCV(row.original)}>Xem</Button>
             
                 <Button 
                   size="sm" 
@@ -244,7 +253,7 @@ export default function CVListTab({ job }: CVListTabProps) {
         return cv.status === cvStatus;
     })
 
-    console.log("Rerender")
+    
   return (
     <div>
       <Card className="mt-4">
