@@ -9,10 +9,10 @@ import { CVStatusOptions } from '@/data/options';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Clock, Mail } from "lucide-react";
 
 import Link from "next/link";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 import { formatDate } from '@/lib/utils';
 import CVDialog, { CVDialogRef } from './CVDialog';
 import page from './page';
@@ -182,12 +182,14 @@ export default function CVListTab({ job }: CVListTabProps) {
           accessorKey: "email",
           header: "Thông tin liên hệ",
           cell: ({ row }) => (
-            <div className="flex flex-col gap-1">
-              <div className=" break-words ">
-                {row.getValue("email")}
+            
+              <div className="flex gap-2 break-words ">
+                <Mail className="h-4 w-4 text-gray-400" />
+                <span className=''>{row.getValue("email")}</span>
+                
               </div>
             
-            </div>
+            
           ),
         },
         {
@@ -201,7 +203,11 @@ export default function CVListTab({ job }: CVListTabProps) {
               Ngày tạo <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           ),
-          cell: ({ row }) => <div className="pl-2">{formatDate(row.getValue("createdAt"))}</div>,
+          cell: ({ row }) => 
+          <div className="pl-2 flex gap-2">
+            <Clock className="h-4 w-4 text-gray-400" />
+            {formatDate(row.getValue("createdAt"))}
+            </div>,
         },
         {
           accessorKey: "status",
@@ -287,42 +293,7 @@ export default function CVListTab({ job }: CVListTabProps) {
 
 
       {/* CV Preview Dialog */}
-      {/* <Dialog >
-        <DialogContent className="max-w-4xl h-[90vh] overflow-auto">
-          <DialogHeader className="flex flex-col items-center gap-4 lg:flex lg:flex-row lg:gap-51">
-            <DialogTitle>Chi tiết CV</DialogTitle>
-            <Link href={selectedCV ? selectedCV.url : "#"}><Button>Tải về</Button> </Link>
-            </DialogHeader>
-            <DialogDescription>
-              <div className="flex flex-col gap-4 lg:flex lg:flex-row lg:gap-24">
-                <div className='flex flex-col gap-4'>
-                <p><strong>Ứng viên:</strong> {selectedCV?.name}</p>
-                <p><strong>Email:</strong> {selectedCV?.email}</p>
-                <p><strong>Ngày tạo:</strong> {selectedCV ? formatDate(selectedCV.createdAt) : ""}</p>
-                </div>
-                <div className='flex flex-col gap-4'>
-                <p><strong>Vị trí:</strong> {selectedCV?.jobTitle}</p>
-                <p><strong>Trạng thái:</strong> {statusLabelMap[selectedCV?.status || ""]}</p>
-                
-                </div>
-                
-                
-              </div>
-            </DialogDescription>
-          
 
-          
-          {selectedCV?.url ? (
-            <iframe
-              src={selectedCV.url}
-              className="w-full h-[60vh] border rounded-md"
-              title="CV Preview"
-            ></iframe>
-          ) : (
-            <p className="text-gray-500 text-center">Không có CV để hiển thị.</p>
-          )}
-        </DialogContent>
-      </Dialog> */}
       <CVDialog ref={cvDialogRef}></CVDialog>
     </div>
   );

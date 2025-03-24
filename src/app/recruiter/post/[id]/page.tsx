@@ -90,9 +90,10 @@ export default function page() {
   //   // ["benefit", { title: "Quyền lợi", component: <Benefit /> }],
   //   // ["contact", { title: "Thông tin liên hệ", component: <Contact /> }],
   // ]);
+  
   return (
     <div>
-      <Card className="mx-auto w-3/4 mb-5">
+      <Card className="lg:mx-auto w-full lg:w-3/4 mb-5">
         <CardHeader>
           <CardTitle className="flex gap-2 break-words mb-4">
             {job.title}{' '}
@@ -173,7 +174,7 @@ export default function page() {
       </Card>
 
      {/* Tabs Section */}
-     <div className="mx-auto w-3/4">
+     <div className="lg:mx-auto w-full lg:w-3/4">
         <div className="flex border-b border-gray-300">
           {tabs.map((tab, index) => (
             <button

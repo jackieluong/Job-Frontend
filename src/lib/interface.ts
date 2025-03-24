@@ -30,4 +30,6 @@ export interface CV {
   status: string;
   createdAt: string;
   updatedAt: string;
+  jobId?: string;
+  coverLetter?: string;
 }

@@ -86,12 +86,14 @@ export function DataTable<TData, TValue>({ columns, data, total, currentPage, on
           )}
         </TableBody>
         <TableFooter className="w-full">
-          <span className="text-left text-gray-500 pl-4 pt-5 mb-3 min-w-full block">Showing  {data.length} of {total} results. </span>
+        </TableFooter>
+          
+     
+      </Table>
+      <span className="text-left text-gray-500 pl-4 pt-5 mb-3 min-w-full block">Showing  {data.length} of {total} results. </span>
      <DataTablePagination table={table} curPage={currentPage} onPageChange={onPageChange}
      pageSize={pageSize} onPageSizeChange={onPageSizeChange}
      />
-     </TableFooter>
-      </Table>
       
     </div>
   )

@@ -29,6 +29,6 @@ const navLinks = [
   { href: "/recruiter/post/create", label: "Đăng tin" },
   { href: "/recruiter/post/list", label: "Quản lý tin" },
   { href: "#", label: "Tìm hồ sơ" },
-  { href: "#", label: "Danh sách ứng viên" },
+  { href: "/recruiter/cv/list", label: "Danh sách ứng viên" },
   { href: "#", label: "Tài khoản" },
 ];

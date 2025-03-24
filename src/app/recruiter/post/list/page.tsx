@@ -181,7 +181,8 @@ export default function page(props: pageProps) {
     ];
     
     return (
-        <div className='mx-auto w-3/4'>
+      <div className='lg:mx-auto w-full lg:w-3/4'>
+        
             <Card className='border-b-2'>
                 <CardHeader className='flex flex-row justify-between'>
                     <CardTitle className='flex items-center'>Quản lý bài đăng</CardTitle>

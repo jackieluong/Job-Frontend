@@ -12,7 +12,7 @@ export default function RecruiterLayout({
       <RecruiterHeader />
 
       {/* Main Content */}
-      <main className="flex-1 p-6 overflow-auto bg-gray-100 ">{children}</main>
+      <main className="flex-1 lg:p-6 overflow-auto bg-gray-100 ">{children}</main>
     </div>
   );
 }

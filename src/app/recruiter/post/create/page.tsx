@@ -68,7 +68,7 @@ export default function JobPosting() {
 
   return (
     <>
-      <div className="mx-auto w-3/4 px-2 lg:px-4 lg:pt-5 pb-6  bg-white shadow-md border-b-2 mb-3">
+      <div className="lg:mx-auto w-full lg:w-3/4 px-2 lg:px-4 lg:pt-5 pb-6  bg-white shadow-md border-b-2 mb-3">
         <h3 className="sm:text-center font-medium md:text-xl md:font-semibold md:mb-8">
           Đăng tin tuyển dụng
         </h3>
