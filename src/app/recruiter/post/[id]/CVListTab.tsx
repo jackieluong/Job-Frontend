@@ -17,13 +17,7 @@ import { formatDate } from '@/lib/utils';
 import CVDialog, { CVDialogRef } from './CVDialog';
 import page from './page';
 
-export type CV = {
-  id: string;
-  jobTitle: string;
-  status: string;
-  name: string;
-  createdAt: string;
-};
+
 
 // Status mappings for colors & labels
 const statusColorMap: Record<string, string> = {
@@ -58,6 +52,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           name: "John Doe",
           email: "johndoe@example.com",
           jobTitle: job.title,
+          role:"APPLICANT",
           url: "https://cdn.prod.website-files.com/6551c9f17224e2b0e729fba4/65d581a5dca4b054b6980098_Budapest.jpg",
           status: "PENDING",
           createdAt: "2025-03-20T10:00:00Z",
@@ -67,6 +62,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           id: "2",
           name: "Jane Smith",
           email: "janesmith@example.com",
+          role:"APPLICANT",
           url: "https://www.topcv.vn/vi/mau-cv-tham-vong.webp?v=3.0",
           jobTitle: job.title,
           status: "APPROVED",
@@ -79,6 +75,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           email: "alicejohnson@example.com",
           url: "https://example.com/cv3.pdf",
           jobTitle: job.title,
+          role:"APPLICANT",
           status: "REJECTED",
           createdAt: "2025-03-18T14:15:00Z",
           updatedAt: "2025-03-22T14:00:00Z",
@@ -89,6 +86,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           email: "michaelbrown@example.com",
           url: "https://example.com/cv4.pdf",
           jobTitle: job.title,
+          role:"COMPANY",
           status: "REVIEWED",
           createdAt: "2025-03-17T11:10:00Z",
           updatedAt: "2025-03-21T09:20:00Z",
@@ -99,6 +97,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           email: "sophiawilson@example.com",
           url: "https://example.com/cv5.pdf",
           status: "PENDING",
+          role:"ADMIN",
           jobTitle: job.title,
           createdAt: "2025-03-21T15:40:00Z",
           updatedAt: "2025-03-22T10:30:00Z",
@@ -110,6 +109,7 @@ export default function CVListTab({ job }: CVListTabProps) {
             url: "https://example.com/cv3.pdf",
             jobTitle: job.title,
             status: "REJECTED",
+            role:"ADMIN",
             createdAt: "2025-03-18T14:15:00Z",
             updatedAt: "2025-03-22T14:00:00Z",
           },
@@ -119,6 +119,7 @@ export default function CVListTab({ job }: CVListTabProps) {
             email: "alicejohnson@example.com",
             url: "https://example.com/cv3.pdf",
             jobTitle: job.title,
+            role:"APPLICANT",
             status: "REJECTED",
             createdAt: "2025-03-18T14:15:00Z",
             updatedAt: "2025-03-22T14:00:00Z",
@@ -146,7 +147,7 @@ export default function CVListTab({ job }: CVListTabProps) {
       if(cv.status === "PENDING"){
         handleChangeStatus(cv, "REVIEWED");
       }
-      
+      console.log(cv);
       cvDialogRef.current?.openDialog(cv);
 
     }

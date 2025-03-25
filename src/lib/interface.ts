@@ -25,6 +25,7 @@ export interface CV {
   id: string;
   name: string;
   email: string;
+  role?: string;
   jobTitle: string;
   url: string;
   status: string;

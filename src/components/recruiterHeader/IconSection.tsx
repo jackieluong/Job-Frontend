@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from "../ui/button";
+
 import { Bell, MessageSquare } from "lucide-react";
-import { Badge } from "../ui/badge";
+
 import Link from 'next/link';
 type IconSectionProps = {
     // Define your props here
