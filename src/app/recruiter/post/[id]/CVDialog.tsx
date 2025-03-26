@@ -3,7 +3,7 @@ import { forwardRef, useImperativeHandle, useState } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -13,7 +13,7 @@ import { formatDate } from '@/lib/utils';
 import React from 'react';
 import { CV } from '@/lib/interface';
 
-import { useChatStore } from '@/store/chatStore';
+import { useChat, useChatStore } from '@/store/chatStore';
 import { useRouter } from 'next/navigation';
 // export type CV = {
 //   id: string;
@@ -124,12 +124,16 @@ const CVDialog = forwardRef<CVDialogRef, {}>((_, ref) => {
     },
   ]
 
-  const {addUser} = useChatStore();
+  const {addUser} = useChat();
   const router = useRouter();
   const handleClickChatButton = () => {
     
     addUser({id: selectedCV?.id || "", name: selectedCV?.name || "", role: selectedCV?.role || ""})
-    router.push("/recruiter/chat");
+    setTimeout(() => {
+      router.push("/chat");
+    }, 100); // Delay to ensure state updates before navigating
+    
+    // router.push("/chat");
 
   }
   return (

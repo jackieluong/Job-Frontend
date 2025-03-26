@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -12,6 +12,8 @@ import { Message } from '@/lib/type';
 import { useAuth } from '@/store/userStore';
 import { formatDateTime } from '@/lib/utils';
 import ChatService from '@/services/chatService';
+import DropdownMenu from '@/components/ui/dropmenu';
+import SearchDropDown from './userdropDown';
 
 // Dummy data for users and messages
 // const users = [
@@ -20,25 +22,27 @@ import ChatService from '@/services/chatService';
 //     { id: 3, name: 'Le Van C',  role: "COMPANY" },
 // ];
 
-const messagesData: Record<number, { sender: string; text: string }[]> = {
-    1: [
-        // { sender: 'Nguyen Van A', text: 'Chào bạn!' },
-        // { sender: 'Bạn', text: 'Chào bạn, bạn khỏe không?' },
-    ],
-    2: [
-        { sender: 'Tran Thi B', text: 'Bạn có rảnh không?' },
-        { sender: 'Bạn', text: 'Tôi đang làm việc, có chuyện gì không?' },
-    ],
-    3: [
-        { sender: 'Le Van C', text: 'Xin chào, có gì mới không?' },
-        { sender: 'Bạn', text: 'Không có gì mới, còn bạn?' },
-    ],
-};
+// const messagesData: Record<number, { sender: string; text: string }[]> = {
+//     1: [
+//         // { sender: 'Nguyen Van A', text: 'Chào bạn!' },
+//         // { sender: 'Bạn', text: 'Chào bạn, bạn khỏe không?' },
+//     ],
+//     2: [
+//         { sender: 'Tran Thi B', text: 'Bạn có rảnh không?' },
+//         { sender: 'Bạn', text: 'Tôi đang làm việc, có chuyện gì không?' },
+//     ],
+//     3: [
+//         { sender: 'Le Van C', text: 'Xin chào, có gì mới không?' },
+//         { sender: 'Bạn', text: 'Không có gì mới, còn bạn?' },
+//     ],
+// };
 
 export default function ChatPage() {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
+
+    const [searchUsers, setSearchUsers] = useState<User[] | null>(null);
 
     const { users, fetchUsersHaveChat } = useChat();
 
@@ -46,6 +50,15 @@ export default function ChatPage() {
 
     const [stompClient, setStompClient] = useState<Client | null>(null);
 
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+    const searchKeyword = useRef<string>('');
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+        }
+      }, [messages, selectedUser]);
 
     useEffect(() => {
         if(user.id == null) return;
@@ -110,7 +123,7 @@ export default function ChatPage() {
         // setMessages(messagesData[userId] || []);
         // fetch messages API
         const chatData = await ChatService.fetchChatHistory(Number(user.id), Number(clickedUser.id)).then((response) => response.data);
-        console.log("Result API: ", chatData);
+        
         const messages: Message[] = chatData.map((message) : Message => {
             return {
                 senderId: message.senderId,
@@ -120,7 +133,7 @@ export default function ChatPage() {
             }       
         })
 
-        console.log("Messages: ", messages);
+        
         setMessages(messages);
     };
 
@@ -137,7 +150,8 @@ export default function ChatPage() {
             timeStamp: new Date().toISOString(),
         };
         
-        // api call to send message
+
+        // send message
 
         stompClient?.publish({
             destination: process.env.NEXT_PUBLIC_PRIVATE_QUEUE_PUB_URL || "",
@@ -153,18 +167,31 @@ export default function ChatPage() {
         setNewMessage('');
     };
 
-    console.log("cur user: " , user);
-    console.log("users" , users);
+    const handleSearchClick = async(keyword: string) => {
+        keyword = keyword.trim();
+        
+        const searchedUsers = await ChatService.fetchUsersByKeyword(keyword).then((response) => response.data);
+        console.log(searchedUsers);
+
+        setSearchUsers(searchedUsers);
+    }
+    
     return (
-        <div className="flex  bg-gray-100">
+        <div className="flex h-screen bg-gray-100">
             {/* Sidebar for Users */}
             <div className="w-2/6 bg-white shadow-md p-4 overflow-auto">
                 <div className='mb-8 relative'>
-                    <Input placeholder='Nhập tên người dùng...' className='rounded-2xl h-[45px] pl-10 '>
+                    <Input onChange={(e) => searchKeyword.current = e.target.value} placeholder='Nhập tên người dùng...' className='rounded-2xl h-[45px] pl-10 '>
                     
                     </Input>
-                    <Button onClick={() => handleSearchClick()} variant="ghost" className="py-0 px-1 absolute hover:bg-blue-200  top-1/2 -translate-y-1/2 w-10 h-10 text-gray-400" ><Search></Search></Button>
+                    <Button onClick={() => handleSearchClick(searchKeyword.current)} variant="ghost" className="py-0 px-1 absolute hover:bg-blue-200  top-1/2 -translate-y-1/2 w-10 h-10 text-gray-400" ><Search></Search></Button>
+
+                    {/* {searchUsers &&
+                    <SearchDropDown searchUsers={searchUsers}/>
+                } */}
                 </div>
+
+               
                 <h2 className="text-base font-semibold mb-4">Danh sách cuộc trò chuyện</h2>
                 <ul>
                     {users.map((user) => (
@@ -187,12 +214,12 @@ export default function ChatPage() {
             {/* Chat Window */}
             <div className="w-3/4 flex flex-col h-screen">
                 {/* Chat Header */}
-                <div className="p-4 bg-gray-300 text-lg font-semibold">
+                <div className="p-4 bg-gray-200 border-1 text-lg font-semibold">
                     {selectedUser ? users.find((u) => u.id === selectedUser.id)?.name : 'Chọn một người để nhắn tin'}
                 </div>
 
                 {/* Chat Messages */}
-                <div className="flex-1 p-4 overflow-auto bg-gray-50">
+                <div className="flex-1 p-4 overflow-auto bg-white">
                     {messages.map((msg, index) => (
                         <div key={index} className={`mb-2 pl-4 p-2 rounded-3xl max-w-1/2 font-medium ${msg.senderId == user.id?.toString() ? 'ml-auto bg-blue-500 text-white' : 'bg-gray-200'}`}>
                             <div className='flex flex-col gap-1'> 
@@ -204,8 +231,9 @@ export default function ChatPage() {
                             </div>
                         </div>
                     ))}
+                    <div ref={messagesEndRef}></div>
                 </div>
-
+                
                 {/* Message Input */}
                 <div className="p-6 bg-white flex border-1 ">
                     <Input

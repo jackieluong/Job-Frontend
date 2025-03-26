@@ -48,7 +48,7 @@ const defaultOption = CVStatusOptions[0].value;
 export default function CVListTab({ job }: CVListTabProps) {
     const cvsData: CV[] = [
         {
-          id: "1",
+          id: "123",
           name: "John Doe",
           email: "johndoe@example.com",
           jobTitle: job.title,
@@ -59,7 +59,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           updatedAt: "2025-03-21T12:00:00Z",
         },
         {
-          id: "2",
+          id: "25",
           name: "Jane Smith",
           email: "janesmith@example.com",
           role:"APPLICANT",
@@ -70,7 +70,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           updatedAt: "2025-03-22T08:45:00Z",
         },
         {
-          id: "3",
+          id: "36",
           name: "Alice Johnson",
           email: "alicejohnson@example.com",
           url: "https://example.com/cv3.pdf",
@@ -81,7 +81,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           updatedAt: "2025-03-22T14:00:00Z",
         },
         {
-          id: "4",
+          id: "47",
           name: "Michael Brown",
           email: "michaelbrown@example.com",
           url: "https://example.com/cv4.pdf",
@@ -92,7 +92,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           updatedAt: "2025-03-21T09:20:00Z",
         },
         {
-          id: "5",
+          id: "56",
           name: "Sophia Wilson",
           email: "sophiawilson@example.com",
           url: "https://example.com/cv5.pdf",
@@ -103,7 +103,7 @@ export default function CVListTab({ job }: CVListTabProps) {
           updatedAt: "2025-03-22T10:30:00Z",
         },
         {
-            id: "6",
+            id: "62",
             name: "Alice Johnson",
             email: "alicejohnson@example.com",
             url: "https://example.com/cv3.pdf",
@@ -144,6 +144,7 @@ export default function CVListTab({ job }: CVListTabProps) {
     }
 
     const handleClickViewCV = (cv: CV) => {
+
       if(cv.status === "PENDING"){
         handleChangeStatus(cv, "REVIEWED");
       }

@@ -11,7 +11,7 @@ class ChatService {
         }
       }
       );
-      console.log(response);
+      
       return response.data;
     } catch (error: AxiosError | any) {
       throw new Error(error.response.data.message);
@@ -28,6 +28,21 @@ class ChatService {
       }
       );
 
+      return response.data;
+    } catch (error: AxiosError | any) {
+      throw new Error(error.response.data.message);
+    }
+  }
+
+  static async fetchUsersByKeyword(keyword: string) {
+    try {
+      const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/accounts/search`,{
+        params:{
+          name: keyword
+        }
+      }
+      );
+      
       return response.data;
     } catch (error: AxiosError | any) {
       throw new Error(error.response.data.message);

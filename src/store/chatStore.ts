@@ -1,6 +1,7 @@
 import ChatService from '@/services/chatService';
 import { create } from 'zustand';
 import { useAuth } from './userStore';
+import { User } from 'lucide-react';
 
 export type User = { id: string; name: string, role: string };
 
@@ -24,13 +25,18 @@ export const useChatStore = create<ChatState>((set) => ({
       
       const userData = await ChatService.fetchAllChatUsers(userId).then((response) => response.data);
 
-      console.log(userData);
-      set((state) => ({
-        ...state,
-        users: userData
-      }
-      )
-      );
+      set((state) => {
+        // Merge API users with existing users, avoiding duplicates
+        const mergedUsers = [...state.users];
+  
+        userData.forEach((user: User) => {
+          if (!mergedUsers.some((u) => u.id === user.id)) {
+            mergedUsers.push(user);
+          }
+        });
+  
+        return {...state, users: mergedUsers };
+      });
 
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -47,12 +53,14 @@ export const useChatStore = create<ChatState>((set) => ({
       }
       return state;
     }),
+    
 }));
 
 
 export const useChat = () => {
   const {users, addUser, fetchUsersHaveChat} = useChatStore();
 
+  
   return{
     users,
     addUser,

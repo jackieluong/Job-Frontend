@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-
+import React from "react";
 interface DropdownItem {
   name: string;
   href: string;
@@ -14,7 +14,7 @@ interface DropdownMenuProps {
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, isActive }) => {
-  console.log("Dropdown active?", isActive); // Debug xem có đúng không
+  // console.log("Dropdown active?", isActive); // Debug xem có đúng không
 
   return (
  <ul
