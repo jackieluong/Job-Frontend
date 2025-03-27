@@ -3,27 +3,26 @@ import { AxiosError } from 'axios';
 
 
 class ChatService {
-  static async fetchAllChatUsers(userId: number) {
+  static async fetchAllConversations(userId: number) {
     try {
-      const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat`,{
+      const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/conversation`,{
         params:{
           userId: userId
         }
       }
       );
-      
+      console.log(response.data);
       return response.data;
     } catch (error: AxiosError | any) {
       throw new Error(error.response.data.message);
     }
   }
 
-  static async fetchChatHistory(userID1: number, userID2: number) {
+  static async fetchChatHistory(conversationId: number) {
     try {
       const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat/history`,{
         params:{
-          userID1: userID1,
-          userID2: userID2
+          conversationId: conversationId
         }
       }
       );
@@ -40,6 +39,20 @@ class ChatService {
         params:{
           name: keyword
         }
+      }
+      );
+      
+      return response.data;
+    } catch (error: AxiosError | any) {
+      throw new Error(error.response.data.message);
+    }
+  }
+
+  static async createNewConversation(userId1: number, userId2: number) {
+    try {
+      const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/conversation`,{
+       user1_ID: userId1,
+       user2_ID: userId2
       }
       );
       

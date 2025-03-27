@@ -17,7 +17,7 @@ import Link from 'next/link';
 
 const cvsData: CV[] = [
     {
-      id: "100",
+      id: "4",
       name: "John Doe",
       email: "johndoe@example.com",
       jobTitle: "Product Owner (Domain: Core Bank/Core Finance Hoặc Xử Lý Nợ",
@@ -30,7 +30,7 @@ const cvsData: CV[] = [
       updatedAt: "2025-03-21T12:00:00Z",
     },
     {
-      id: "222",
+      id: "8",
       name: "Jane Smith",
       email: "janesmith@example.com",
       role:"APPLICANT",
@@ -43,7 +43,7 @@ const cvsData: CV[] = [
       updatedAt: "2025-03-22T08:45:00Z",
     },
     {
-      id: "34",
+      id: "12",
       name: "Alice Johnson",
       email: "alicejohnson@example.com",
       role:"APPLICANT",

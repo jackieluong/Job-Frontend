@@ -15,6 +15,7 @@ import { CV } from '@/lib/interface';
 
 import { useChat, useChatStore } from '@/store/chatStore';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/store/userStore';
 // export type CV = {
 //   id: string;
 //   name: string;
@@ -124,14 +125,16 @@ const CVDialog = forwardRef<CVDialogRef, {}>((_, ref) => {
     },
   ]
 
-  const {addUser} = useChat();
+  const {addConversation} = useChat();
   const router = useRouter();
+
+  const {user} = useAuth();
   const handleClickChatButton = () => {
     
-    addUser({id: selectedCV?.id || "", name: selectedCV?.name || "", role: selectedCV?.role || ""})
+    addConversation({id: Number(selectedCV?.id) || -1, name: selectedCV?.name || "", role: selectedCV?.role || ""}, user.id || -1);
     setTimeout(() => {
       router.push("/chat");
-    }, 100); // Delay to ensure state updates before navigating
+    }, 500); // Delay to ensure state updates before navigating
     
     // router.push("/chat");
 

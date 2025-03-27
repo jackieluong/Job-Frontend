@@ -3,39 +3,40 @@ import { create } from 'zustand';
 import { useAuth } from './userStore';
 import { User } from 'lucide-react';
 
-export type User = { id: string; name: string, role: string };
+export type User = { id: number; name: string, role: string };
+
+export type Conversation = {
+  id: number;
+  lastMessage: string;
+  lastUpdated: string;
+  user: User
+}
+
+
 
 type ChatState = {
-  users: User[];
-  addUser: (user: User) => void;
-  fetchUsersHaveChat: (userId: number) => Promise<void>;
+  
+  conversations: Conversation[];
+  addConversation: (user: User, curUserID: number) => void;
+  fetchConversations: (userId: number) => Promise<void>;
   // getChatHistory: (userId1: number, userId2: number) => Promise<void>;
+  
 };
 
+
 export const useChatStore = create<ChatState>((set) => ({
-  users: [
-    // { id: "1", name: 'Nguyen Van A', role: "APPLICANT" },
-    // { id: "2", name: 'Tran Thi B',  role: "APPLICANT" },
-    // { id: "5", name: 'Le Van C',  role: "COMPANY" },
-  ],
+ conversations: [],
 
   // Fetch users from API and update Zustand state
-  fetchUsersHaveChat: async (userId: number) => {
+  fetchConversations: async (userId: number) => {
     try {
       
-      const userData = await ChatService.fetchAllChatUsers(userId).then((response) => response.data);
+      const conversationData = await ChatService.fetchAllConversations(userId).then((response) => response.data);
 
       set((state) => {
-        // Merge API users with existing users, avoiding duplicates
-        const mergedUsers = [...state.users];
-  
-        userData.forEach((user: User) => {
-          if (!mergedUsers.some((u) => u.id === user.id)) {
-            mergedUsers.push(user);
-          }
-        });
-  
-        return {...state, users: mergedUsers };
+        
+        
+        return {...state, conversations: conversationData};
       });
 
     } catch (error) {
@@ -46,24 +47,61 @@ export const useChatStore = create<ChatState>((set) => ({
 
 
 
-  addUser: (user) =>
-    set((state) => {
-      if (!state.users.some((u) => u.id === user.id)) {
-        return { users: [...state.users, user] };
-      }
-      return state;
-    }),
+  // addUser: (user) =>
+  //   set((state) => {
+  //     if (!state.users.some((u) => u.id === user.id)) {
+  //       return { users: [...state.users, user] };
+  //     }
+  //     return state;
+  //   }),
+
+  // addConversation : (user, curUserID) => {  
+
+  //     set((state) => async () => {
+  //       if(state.conversations.some((conversation) => conversation.user.id === user.id)) return state;
+  //       const data = await ChatService.createNewConversation(curUserID, user.id).then((response) => response.data);
+
+  //       return {...state, conversations: [...state.conversations, {id: data.id, lastMessage: data.lastMessage, lastUpdated: data.lastUpdated, user: user}]}; 
+  //     });
+  // },
+  
+  addConversation: async (user, curUserID) => {  
+    try {
+      // Prevent duplicate conversation
+      const conversationState =  useChatStore.getState().conversations;
+      console.log("conversationState", conversationState);
+      if(conversationState.some((conversation) => conversation.user.id === user.id)) return;
+  
+      // Fetch data
+      const data = await ChatService.createNewConversation(curUserID, user.id).then((response) => response.data);
+  
+      // Update state after fetching data
+      set((state) => ({
+        ...state,
+        conversations: [...state.conversations, { 
+          id: data.id, 
+          lastMessage: data.lastMessage, 
+          lastUpdated: data.lastUpdated, 
+          user: user
+        }]
+      }));
+      
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  },
+  
     
 }));
 
 
 export const useChat = () => {
-  const {users, addUser, fetchUsersHaveChat} = useChatStore();
+  const {conversations, addConversation, fetchConversations} = useChatStore();
 
   
   return{
-    users,
-    addUser,
-    fetchUsersHaveChat
+    conversations,
+    addConversation,
+    fetchConversations
   }
 }

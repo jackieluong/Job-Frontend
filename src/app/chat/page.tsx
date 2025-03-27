@@ -5,15 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { roleColorMap } from '@/data/map';
-import { useChat, useChatStore, User } from '@/store/chatStore';
+import { Conversation, useChat, useChatStore, User } from '@/store/chatStore';
 import { Client, Stomp } from "@stomp/stompjs";
 import SockJS from 'sockjs-client';
-import { Message } from '@/lib/type';
+import {  MessageReceived, MessageSend } from '@/lib/type';
 import { useAuth } from '@/store/userStore';
 import { formatDateTime } from '@/lib/utils';
 import ChatService from '@/services/chatService';
-import DropdownMenu from '@/components/ui/dropmenu';
-import SearchDropDown from './userdropDown';
+
 
 // Dummy data for users and messages
 // const users = [
@@ -37,18 +36,21 @@ import SearchDropDown from './userdropDown';
 //     ],
 // };
 
+type MessageMap = Record<number, MessageReceived[]>;
+
 export default function ChatPage() {
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [newMessage, setNewMessage] = useState('');
+    const [conversation, setConversation] = useState<Conversation | null>(null);
+    const [messages, setMessages] = useState<MessageReceived[]>([]);
+    const newMessage = useRef<HTMLInputElement>(null);
 
     const [searchUsers, setSearchUsers] = useState<User[] | null>(null);
 
-    const { users, fetchUsersHaveChat } = useChat();
+    const { conversations, fetchConversations } = useChat();
 
     const {user} = useAuth();
 
-    const [stompClient, setStompClient] = useState<Client | null>(null);
+    // const [stompClient, setStompClient] = useState<Client | null>(null);
+    const stompClientRef = useRef<Client | null>(null);
 
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,17 +60,28 @@ export default function ChatPage() {
         if (messagesEndRef.current) {
           messagesEndRef.current.scrollIntoView({behavior: "smooth"});
         }
-      }, [messages, selectedUser]);
+      }, [messages, conversation]);
 
     useEffect(() => {
         if(user.id == null) return;
-        const usersWithChat = fetchUsersHaveChat(Number(user.id));
-        console.log(usersWithChat);
 
-    }, [user.id])
+        fetchConversations(Number(user.id));
+        
 
+    }, [user.id, messages]);
+
+    // useEffect(() => {
+    //     const lastMessage = messages[messages.length -1];
+
+    //     // const conversationExist = conversations.some((conversation) => conversation.id === lastMessage.);
+        
+
+    // }, [messages]);
     useEffect(() => {
+
         const connect = () => {
+            if(stompClientRef.current !== null) return;
+
             const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || "");
             const client = new Client({
               webSocketFactory: () => socket,
@@ -84,7 +97,7 @@ export default function ChatPage() {
                 console.log("Connected to WebSocket, headers:", frame.headers);
                 client.subscribe(process.env.NEXT_PUBLIC_PRIVATE_QUEUE_SUB_URL || "", (message) => {
                   console.log("Received message:", JSON.parse(message.body));
-                  const receivedMessage: Message = JSON.parse(message.body);
+                  const receivedMessage: MessageReceived = JSON.parse(message.body);
                 //   const newMessage: Message = {
                 //     senderId: receivedMessage.senderId,
                 //     senderName: receivedMessage.senderName,
@@ -93,8 +106,13 @@ export default function ChatPage() {
                 //     timeStamp: receivedMessage.timeStamp
                 //   }
                   setMessages((prev) => [...prev, receivedMessage]);
-                  console.log("Messages:", messages);
+                  
                 });
+              },
+
+              onDisconnect: () => {
+                console.log("Disconnected from WebSocket on ondisconnect func");
+
               },
               onStompError: (frame) => {
                 console.error("Broker reported error: " + frame.headers["message"]);
@@ -102,69 +120,80 @@ export default function ChatPage() {
               },
             });
             client.activate();
-            setStompClient(client);
+            // setStompClient(client);
+            stompClientRef.current = client;
           };
         
-        connect();
+        
+            connect();
+        
+        
         return () => {
           // Cleanup function
-          if (stompClient) {
-            stompClient.deactivate();
-            
+          if (stompClientRef.current) {
+            stompClientRef.current?.deactivate();
+            stompClientRef.current = null;
+            console.log("Disconnected from WebSocket");
           }
         };
       }, []);
     
     
-    
-    
-    const handleUserClick = async(clickedUser: User) => {
-        setSelectedUser(clickedUser);
+    console.log("conversation: ", conversation);
+    console.log("conversations: ", conversations);
+    console.log("Messages:", messages);
+    const handleConversationClick = async(clickedConversation: Conversation) => {
+        setConversation(clickedConversation);
         // setMessages(messagesData[userId] || []);
         // fetch messages API
-        const chatData = await ChatService.fetchChatHistory(Number(user.id), Number(clickedUser.id)).then((response) => response.data);
+        console.log("conversationId: ", clickedConversation.id);
+        const chatData = await ChatService.fetchChatHistory(clickedConversation.id).then((response) => response.data);
         
-        const messages: Message[] = chatData.map((message) : Message => {
+        const messages: MessageReceived[] = chatData.map((message) : MessageReceived => {
             return {
                 senderId: message.senderId,
-                recipientId: message.receiverId,
+                // recipientId: message.receiverId,
                 content: message.content,
                 timeStamp: message.time,
+                messageStatus: message.messageStatus,
             }       
         })
 
         
         setMessages(messages);
     };
-
-    const handleSendMessage = () => {
-        if (!newMessage.trim() || selectedUser === null) return;
+    
+    const handleSendMessage = (conversationId: number) => {
+        
+        if (!newMessage.current?.value.trim() || conversation === null) return;
 
         
-        const message: Message = {
+        const message: MessageSend = {
             senderId: user.id?.toString() || "",
             senderName: user.name || "",
             senderRole: user.role || "",
-            recipientId: selectedUser.id.toString(),
-            content: newMessage,
+            recipientId: conversation.user.id.toString(),
+            content: newMessage.current.value,
             timeStamp: new Date().toISOString(),
+            conversationId
         };
         
 
         // send message
 
-        stompClient?.publish({
+        stompClientRef.current?.publish( {
             destination: process.env.NEXT_PUBLIC_PRIVATE_QUEUE_PUB_URL || "",
             body: JSON.stringify(message),
         })
         // const updatedMessages = [...messages, { sender: 'Bạn', text: newMessage }];
 
-        const updatedMessages: Message[] = [
+        const updatedMessages: MessageReceived[] = [
             ...messages, message
         ];
 
         setMessages(updatedMessages);
-        setNewMessage('');
+
+        newMessage.current.value = '';
     };
 
     const handleSearchClick = async(keyword: string) => {
@@ -194,17 +223,28 @@ export default function ChatPage() {
                
                 <h2 className="text-base font-semibold mb-4">Danh sách cuộc trò chuyện</h2>
                 <ul>
-                    {users.map((user) => (
+                    {conversations.map((curConversation) => (
                         
                         <li
-                            key={user.id}
-                            onClick={() => handleUserClick(user)}
-                            className={`p-3 cursor-pointer rounded-md transition flex items-center justify-between ${
-                                selectedUser?.id === user.id ? 'bg-blue-200 ' : 'hover:bg-gray-200'
+                            key={curConversation.id}
+                            onClick={() => handleConversationClick(curConversation)}
+                            className={`p-3 cursor-pointer rounded-md transition flex flex-col gap-1 ${
+                                conversation?.id === curConversation.id ? 'bg-blue-200 ' : 'hover:bg-gray-200'
                             }`}
                         >
-                            {user.name}
-                            <div className={ roleColorMap[user.role]} >{user.role}</div>
+                            <div className='flex items-center justify-between'>
+                            {curConversation.user.name}
+                            <div className={ roleColorMap[curConversation.user.role]} >{curConversation.user.role}</div>
+                            
+                            </div>
+                            {curConversation.lastMessage && curConversation.lastMessage !== "" &&(
+                            <div className='text-sm text-gray-500 flex gap-2'>
+                                
+                                <p>Last message:</p> 
+                                <p className='truncate'>{curConversation.lastMessage}</p>
+                            
+                                </div>
+                            )}
                         </li>
                         
                     ))}
@@ -215,7 +255,7 @@ export default function ChatPage() {
             <div className="w-3/4 flex flex-col h-screen">
                 {/* Chat Header */}
                 <div className="p-4 bg-gray-200 border-1 text-lg font-semibold">
-                    {selectedUser ? users.find((u) => u.id === selectedUser.id)?.name : 'Chọn một người để nhắn tin'}
+                    {conversation ? conversations.find((c) => c.id === conversation.id)?.user.name : 'Chọn một người để nhắn tin'}
                 </div>
 
                 {/* Chat Messages */}
@@ -224,7 +264,7 @@ export default function ChatPage() {
                         <div key={index} className={`mb-2 pl-4 p-2 rounded-3xl max-w-1/2 font-medium ${msg.senderId == user.id?.toString() ? 'ml-auto bg-blue-500 text-white' : 'bg-gray-200'}`}>
                             <div className='flex flex-col gap-1'> 
                             <div className='flex gap-1'>
-                                <strong>{msg.senderId == user.id?.toString() ? "Bạn" : selectedUser?.name }: </strong>
+                                <strong>{msg.senderId == user.id?.toString() ? "Bạn" : conversation?.user.name || msg.senderName }: </strong>
                                 <p className=''>{msg.content}</p> 
                             </div>
                             <p className="text-sm">{formatDateTime( msg.timeStamp || "")}</p>
@@ -239,11 +279,11 @@ export default function ChatPage() {
                     <Input
                         className="flex-1 border-gray-300 rounded-md p-2 "
                         placeholder="Nhập tin nhắn..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        ref={newMessage}
+                        // onChange={(e) => newMessage.current?.value = e.target.value}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(conversation?.id || -1)}
                     />
-                    <Button className="ml-2 bg-blue-500 text-white px-20 py-2 rounded-md" onClick={handleSendMessage}>
+                    <Button className="ml-2 bg-blue-500 text-white px-20 py-2 rounded-md" onClick={() => handleSendMessage(conversation?.id || -1)}>
                         Gửi
                     </Button>
                 </div>

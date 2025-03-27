@@ -48,7 +48,7 @@ const defaultOption = CVStatusOptions[0].value;
 export default function CVListTab({ job }: CVListTabProps) {
     const cvsData: CV[] = [
         {
-          id: "123",
+          id: "7",
           name: "John Doe",
           email: "johndoe@example.com",
           jobTitle: job.title,
