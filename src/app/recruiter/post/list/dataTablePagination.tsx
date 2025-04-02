@@ -197,14 +197,15 @@ import { cn } from "@/lib/utils"; // Utility for conditional classes
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
-  curPage?: number;
+  curPage: number;
   onPageChange?: (page: number) => void;
-  pageSize?: number
+  pageSize: number;
   onPageSizeChange?: (pageSize: number) => void
+  pageCount: number;
 }
 
-export function DataTablePagination<TData>({ table, curPage = 0, onPageChange, pageSize, onPageSizeChange }: DataTablePaginationProps<TData>) {
-  const pageCount = table.getPageCount();
+export function DataTablePagination<TData>({ table, curPage = 0, onPageChange, pageSize, onPageSizeChange, pageCount }: DataTablePaginationProps<TData>) {
+  // const pageCount = table.getPageCount();
   const currentPage = curPage;
   // const pageSize = table.getState().pagination.pageSize;
 

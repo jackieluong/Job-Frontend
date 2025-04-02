@@ -16,6 +16,7 @@ import { CV } from '@/lib/interface';
 import { useChat, useChatStore } from '@/store/chatStore';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/store/userStore';
+import { CVStatusLabelMap } from '@/data/map';
 // export type CV = {
 //   id: string;
 //   name: string;
@@ -23,12 +24,12 @@ import { useAuth } from '@/store/userStore';
 //   createdAt: string;
 //   url?: string;
 // };
-const statusLabelMap: Record<string, string> = {
-  APPROVED: 'Đã chấp nhận',
-  REVIEWED: 'Đã xem',
-  REJECTED: 'Bị từ chối',
-  PENDING: 'Đang chờ duyệt',
-};
+// const statusLabelMap: Record<string, string> = {
+//   APPROVED: 'Đã chấp nhận',
+//   REVIEWED: 'Đã xem',
+//   REJECTED: 'Bị từ chối',
+//   PENDING: 'Đang chờ duyệt',
+// };
 
 export type CVDialogRef = {
   openDialog: (cv: CV) => void;
@@ -44,7 +45,7 @@ const Info = ({ selectedCV} : InfoProps) =>{
     <div className="flex flex-col gap-4 lg:flex lg:flex-row lg:gap-24 mb-3 mt-4">
     <div className="flex flex-col gap-4">
       <div>
-        <strong>Ứng viên:</strong> {selectedCV?.name}
+        <strong>Ứng viên:</strong> {selectedCV?.userName}
       </div>
       <div>
         <strong>Email:</strong> {selectedCV?.email}
@@ -56,11 +57,11 @@ const Info = ({ selectedCV} : InfoProps) =>{
     </div>
     <div className="flex flex-col gap-4">
       <div>
-        <strong>Vị trí:</strong> {selectedCV?.jobTitle}
+        <strong>Vị trí:</strong> {selectedCV?.jobName}
       </div>
       <div>
         <strong>Trạng thái:</strong>{' '}
-        {statusLabelMap[selectedCV?.status || '']}
+        {CVStatusLabelMap[selectedCV?.applyStatus || '']}
       </div>
     </div>
   </div>
@@ -89,9 +90,9 @@ type PreviewCVProps = {
 const PreviewCV = ({selectedCV} : PreviewCVProps) => {
   return (
   <div className='h-full mt-4'>
-  {selectedCV?.url ? (
+  {selectedCV?.resume ? (
     <iframe
-      src={selectedCV.url}
+      src={selectedCV.resume}
       className="w-full h-[90%] border rounded-md"
       title="CV Preview"
     ></iframe>
@@ -131,7 +132,7 @@ const CVDialog = forwardRef<CVDialogRef, {}>((_, ref) => {
   const {user} = useAuth();
   const handleClickChatButton = () => {
     
-    addConversation({id: Number(selectedCV?.id) || -1, name: selectedCV?.name || "", role: selectedCV?.role || ""}, user.id || -1);
+    addConversation({id: Number(selectedCV?.id) || -1, name: selectedCV?.userName || "", role: selectedCV?.role || ""}, user.id || -1);
     setTimeout(() => {
       router.push("/chat");
     }, 500); // Delay to ensure state updates before navigating
@@ -154,8 +155,8 @@ const CVDialog = forwardRef<CVDialogRef, {}>((_, ref) => {
     Chi tiết CV
   </DialogTitle>
   <div className="flex gap-2">
-    {selectedCV?.url && (
-      <Link href={selectedCV.url} target='_blank'>
+    {selectedCV?.resume && (
+      <Link href={selectedCV.resume} target='_blank'>
         <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition">
           Tải về
         </Button>

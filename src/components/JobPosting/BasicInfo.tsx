@@ -11,14 +11,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { industryOptions } from '@/data/data';
+
 import { provinceOptions } from '@/data/locationData';
 import { fetchDistrict, fetchProvinces } from '@/services/locationService';
-import TextEditor from '../TextEditor/textEditor';
+import ReactMde from 'react-simplemde-editor';
+import ReactMarkdown from 'react-markdown';
+// import 'react-simplemde-editor/dist/index.css';
+import "easymde/dist/easymde.min.css";
 
 import { RadioGroup } from '@radix-ui/react-radio-group';
-import { jobTypeOptions } from '@/data/jobTypeOptions';
+
 import { RadioItem } from '../ui/radio';
+import { industryOptions, jobTypeOptions } from '@/data/options';
+import { MultiSelect } from '../multiSelect/multi-select';
+import { Textarea } from '../ui/textarea';
 
 interface Province {
   code: string;
@@ -49,9 +55,9 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
   // const [provinceCode, setProvinceCode] = useState<number | null>(null);
   const [provinces, setProvinces] = useState<Province[]>([]);
 
-  const [districts, setDistricts] = useState<District[]>([]);
+  // const [districts, setDistricts] = useState<District[]>([]);
 
-  const [provinceCode, setProvinceCode] = useState<string | null>(null);
+  // const [provinceCode, setProvinceCode] = useState<string | null>(null);
   // const [provinceName, setProvinceName] = useState<string | null>(null);
 
   const [editorState, setEditorState] = useState<string>('');
@@ -81,41 +87,33 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
 
   console.log(jobInfo);
 
-  useEffect(() => {
-    const getDistricts = async () => {
-      if (provinceCode) {
-        const data = await fetchDistrict(Number.parseInt(provinceCode));
+  // useEffect(() => {
+  //   const getDistricts = async () => {
+  //     if (provinceCode) {
+  //       const data = await fetchDistrict(Number.parseInt(provinceCode));
 
-        const districts = data?.map((district: District) => {
-          return { code: district.code, name: district.name };
-        });
+  //       const districts = data?.map((district: District) => {
+  //         return { code: district.code, name: district.name };
+  //       });
 
-        setDistricts(districts);
-      }
-    };
-    getDistricts();
-  }, [provinceCode]);
+  //       setDistricts(districts);
+  //     }
+  //   };
+  //   getDistricts();
+  // }, [provinceCode]);
 
-  const handleProvinceChange = (value: string) => {
-    jobInfo.province = value; // value is name of province
+  const handleProvincesChange = (value: string[]) => {
+    jobInfo.city = value; // value is name of province
 
-    const code = provinces.find((p) => p.name === value)?.code;
-    setProvinceCode(code?.toString() || null);
+    // const code = provinces.find((p) => p.name === value)?.code;
+    // setProvinceCode(code?.toString() || null);
   };
 
   const handleEditorState = (value: string) => {
     jobInfo.description = value;
     setEditorState(value);
   };
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   const formData = new FormData(e.currentTarget);
-
-  //   for (const [key, value] of formData.entries()) {
-  //     console.log(`${key}: ${value}`);
-  //   }
-
-  // }
+  
 
   return (
     <div>
@@ -123,9 +121,9 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
         <Label className="font-medium">Chức danh tuyển dụng</Label>
         {/* <Input name='title' ref={titleRef} placeholder="Nhập chức danh"></Input> */}
         <Input
-          name="title"
-          defaultValue={jobInfo.title}
-          onChange={(e) => (jobInfo.title = e.target.value)}
+          name="name"
+          defaultValue={jobInfo.name}
+          onChange={(e) => (jobInfo.name = e.target.value)}
           placeholder="Nhập chức danh"
           required
         ></Input>
@@ -155,7 +153,7 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
         <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
           <div className="flex flex-col gap-4 lg:flex-1">
             <Label className="font-medium">Tỉnh/Thành phố</Label>
-            <Select
+            {/* <Select
               name="province"
               defaultValue={jobInfo.province}
               onValueChange={(value) => handleProvinceChange(value)}
@@ -170,9 +168,11 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
+          <MultiSelect  variant="green" maxCount={10} options={provinceOptions} onValueChange={handleProvincesChange} defaultValue={jobInfo.city}></MultiSelect>
+            
           </div>
-          <div className="flex flex-col gap-4 lg:flex-1">
+          {/* <div className="flex flex-col gap-4 lg:flex-1">
             <Label className="font-medium">Quận/Huyện</Label>
             <Select
               name="district"
@@ -190,7 +190,7 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
           {/* <div className='flex flex-col gap-4'>
             <Label className="font-medium">Địa chỉ</Label>
             <Input placeholder="Nhập địa điểm"></Input>
@@ -210,13 +210,51 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
       </div>
       <div className="py-4 flex flex-col gap-4">
         <Label className="font-medium">
-          Mô tả công việc (nên bao gồm Mô tả Công việc, Yêu cầu công việc)
+          Mô tả công việc 
         </Label>
-        <TextEditor
+        {/* <TextEditor
           onChange={handleEditorState}
           initialContent={jobInfo.description}
         />
-        <input type="hidden" name="description" value={editorState} />
+        <input type="hidden" name="description" value={editorState} /> */}
+        {/* <Textarea className='h-65' name='description' defaultValue={jobInfo.description} onChange={(e) => (jobInfo.description = e.target.value)}/> */}
+
+        {/* Markdown Editor using React SimpleMDE */}
+      <ReactMde
+        value={jobInfo.description}
+        onChange={(value) => (jobInfo.description = value)}
+        
+        options={{
+          spellChecker: false,
+          maxHeight: "300px",
+          
+        }}
+        
+      />
+      </div>
+      <div className="py-4 flex flex-col gap-4">
+        <Label className="font-medium">
+          Chi tiết (bao gồm Yêu cầu Công việc, Quyền lợi, Thời gian làm việc)
+        </Label>
+        <ReactMde
+        value={jobInfo.detail}
+        onChange={(value) => (jobInfo.detail = value)}
+        
+        options={{
+          spellChecker: false,
+          maxHeight: "300px",
+          
+        }}
+        
+      />
+        {/* <TextEditor
+          onChange={handleEditorState}
+          initialContent={jobInfo.description}
+        />
+        <input type="hidden" name="description" value={editorState} /> */}
+        {/* <Textarea className='h-65' name='benefit' defaultValue={jobInfo.benefit} onChange={(e) => (jobInfo.detail = e.target.value)}/> */}
+          {/* <ReactMarkdown >{jobInfo.description}</ReactMarkdown> */}
+        
       </div>
       <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
         <div className="py-4 flex flex-col gap-4 flex-1">

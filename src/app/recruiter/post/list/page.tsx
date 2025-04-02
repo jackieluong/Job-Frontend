@@ -1,7 +1,7 @@
 "use client"
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from './dataTable';
@@ -9,9 +9,12 @@ import {  initPosts, Post, statusColorMap, statusLabelMap } from './columns';
 import Link from 'next/link';
 import { ColumnDef } from '@tanstack/react-table';
 import { Switch } from '@/components/ui/switch';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
+import { pages } from 'next/dist/build/templates/app-page';
+import * as JobService from "@/services/jobService";
+import { useAuth } from '@/store/userStore';
+import { formatDate } from '@/lib/utils';
   // const jobPostings = [
   //   {
   //     title: "Frontend Developer",
@@ -49,7 +52,7 @@ import { Badge } from '@/components/ui/badge';
   const postStatusOptions = [
     { value: "ALL", label: "Tất cả" },
     { value: "CLOSED", label: "Đã đóng" },
-    { value: "OPEN", label: "Đang mở" },
+    { value: "ACTIVE", label: "Đang mở" },
     { value: "REJECTED", label: "Bị từ chối" },
     { value: "PENDING", label: "Đang chờ duyệt" },
   ]
@@ -62,20 +65,46 @@ type pageProps = {
 const defaultOption = "ALL";
 export default function page(props: pageProps) {
 
+    const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState<Post[]>(initPosts);
-    const [postStatus, setPostStatus] = useState<string>(defaultOption);
+    const [postStatus, setPostStatus] = useState<string | null>(defaultOption);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(5);
+    
+    const totalPosts = useRef<number>(0);
+    const pageCount = useRef<number>(0);
+
+    const{user}  = useAuth();
 
 
-    const data = posts.filter((post) => {
-        if (postStatus === defaultOption) {
-          return true;
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try {
+          setIsLoading(true);
+          if(!user) return;
+          const data = await JobService.getPostByCompany(user.id || -1, postStatus, currentPage+1, pageSize, null, null );
+          
+          totalPosts.current = data.totalElement;
+          pageCount.current = data.totalPage
+          setPosts(data.data);
+        } catch (error) {
+          console.error("Error fetching posts:", error);
         }
-        return post.status === postStatus;
-    })
+      }
 
-    const handleSwitchStatus = (post: Post, newStatus: string) =>{
+      fetchPosts();
+      setIsLoading(false);
+    },[currentPage, pageSize, user, postStatus])
+
+    // const data = posts.filter((post) => {
+    //     if (postStatus === defaultOption) {
+    //       return true;
+    //     }
+    //     return post.status === postStatus;
+    // })
+    // const data = posts;
+    
+    const handleSwitchStatus = async (post: Post, newStatus: string) =>{
       console.log("Switch status", newStatus);
       if (post.status === "REJECTED" || post.status === "PENDING") return;
       setPosts(prevPosts => 
@@ -83,16 +112,18 @@ export default function page(props: pageProps) {
           p.id === post.id ? { ...p, status: newStatus } : p
         )
       );
+      await JobService.updateJobPostStatus(Number.parseInt(post.id), newStatus);
+
     }
     const columns: ColumnDef<Post>[] = [
       {
-        accessorKey: 'title',
+        accessorKey: 'name',
         header: 'Tiêu đề bài đăng',
         // cell: ({ row }) => <div className="font-medium flex-grow">{row.getValue("title")}</div>,
         cell: ({ row }) => (
           <div className="flex flex-col gap-1">
             <div className="font-medium min-w-[200px] max-w-[500px] break-words">
-              {row.getValue('title')}
+              {row.original.name }
             </div>
             <div className="flex flex-col lg:flex lg:flex-row  gap-2 ">
               <Link
@@ -131,9 +162,9 @@ export default function page(props: pageProps) {
           
          return (
         <Switch 
-        checked={status  === "OPEN"} 
+        checked={status  === "ACTIVE"} 
         disabled={isDisabled}
-        onCheckedChange={(checked) => handleSwitchStatus(row.original, checked ? "OPEN" : "CLOSED")}
+        onCheckedChange={(checked) => handleSwitchStatus(row.original, checked ? "ACTIVE" : "CLOSED")}
         className={isDisabled ? "opacity-50 cursor-not-allowed" : ""}
         > </Switch>)
         }
@@ -149,7 +180,7 @@ export default function page(props: pageProps) {
             Ngày tạo <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
-        cell: ({ row }) => <div className="pl-2">{row.getValue('createdAt')}</div>,
+        cell: ({ row }) => <div className="pl-2">{formatDate( row.getValue('createdAt'))}</div>,
       },
       {
         accessorKey: 'deadline',
@@ -162,7 +193,7 @@ export default function page(props: pageProps) {
             Hạn nộp <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
-        cell: ({ row }) => <div className="pl-2">{row.getValue('deadline')}</div>,
+        cell: ({ row }) => <div className="pl-2">{formatDate(row.getValue('deadline'))}</div>,
       },
       {
         accessorKey: 'status',
@@ -180,9 +211,16 @@ export default function page(props: pageProps) {
       },
     ];
     
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        </div>
+      );
+    }
     return (
       <div className='lg:mx-auto w-full lg:w-3/4'>
-        
+            
             <Card className='border-b-2'>
                 <CardHeader className='flex flex-row justify-between'>
                     <CardTitle className='flex items-center'>Quản lý bài đăng</CardTitle>
@@ -210,9 +248,10 @@ export default function page(props: pageProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                <DataTable columns={ columns } data={data} total={posts.length} 
+                <DataTable columns={ columns } data={posts} total={totalPosts.current} 
                 currentPage={currentPage} onPageChange={setCurrentPage}
                 pageSize={pageSize} onPageSizeChange={setPageSize}
+                pageCount={pageCount.current}
                 />
                 </CardContent>
             </Card>

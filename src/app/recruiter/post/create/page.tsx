@@ -6,42 +6,57 @@ import Benefit from '@/components/JobPosting/Benefit';
 import Contact from '@/components/JobPosting/Contact';
 import Requirement from '@/components/JobPosting/Requirement';
 import { JobPostingInfo } from '@/lib/interface';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import * as JobService from "@/services/jobService";
+import { useAuth } from '@/store/userStore';
 
-
-const jobInfo: JobPostingInfo = {
-  title: '',
-  industry: '',
-  province: '',
-  district: '',
-  description: '',
-  jobType: '',
+const initialJobInfo: JobPostingInfo = {
+  name: '',
+  city: [],
+  skills: [],
   salaryFrom: 0,
   salaryTo: 0,
-  deadline: '',
-  gender: '',
-  level: '',
   quantity: 0,
-  experience: 0,
-  education: '',
-};
-export default function JobPosting() {
-  const [activeTab, setActiveTab] = useState<number>(0);
-  // const [jobInfo, setJobInfo] = useState<JobPostingInfo>({
-  //   title: '',
-  //   industry: '',
-  //   province: '',
-  //   district: '',
-  //   description: '',
-  //   salaryFrom: 0,
-  //   salaryTo: 0,
-  //   deadline: '',
-  //   companyName: '',
-  // });
+  jobType: "FULL_TIME",
+  level: "INTERN",
+  educationLevel: "NONE",
+  yearOfExperience: 0,
+  description: '',
+  deadline: '',
+  jobStatus: "PENDING",
+  companyId: 0,
+  industry: '',
+  genderRequire: 'NONE',
+  detail: '',
 
+}  
+
+export default function JobPosting() {
+  const jobInfo = useRef<JobPostingInfo>({
+  name: '',
+  city: [],
+  skills: [],
+  salaryFrom: 0,
+  salaryTo: 0,
+  quantity: 0,
+  jobType: "FULL_TIME",
+  level: "INTERN",
+  educationLevel: "NONE",
+  yearOfExperience: 0,
+  description: '',
+  deadline: '',
+  jobStatus: "PENDING",
+  companyId: useAuth().user.id || -1,
+  industry: '',
+  genderRequire: 'NONE',
+  detail: '',
+  }); 
+  const [activeTab, setActiveTab] = useState<number>(0);
+ 
   // Handles form submission at every step
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>, step?: number) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>, step?: number) => {
     e.preventDefault();
+    console.log(jobInfo);
     const formData = new FormData(e.currentTarget);
 
     // Log the data to check what’s being submitted at each step
@@ -50,22 +65,32 @@ export default function JobPosting() {
       console.log(`${key}: ${value}`);
     }
 
+   
     // If a step number is provided, navigate to that step
-    if (step !== undefined) {
+    if (step !== undefined && step < tabs.length) {
       setActiveTab(step);
+    }else if(step === tabs.length){
+      // submit and finish job posting
+
+      const data = await JobService.createJob(jobInfo.current);
+      console.log(data);
     }
+
+     
+    
+
   };
 
   const tabs = [
     {
       title: 'Thông tin tuyển dụng',
-      component: <BasicInfo jobInfo={jobInfo}  />,
+      component: <BasicInfo jobInfo={jobInfo.current}  />,
     },
-    { title: 'Yêu cầu', component: <Requirement  jobInfo={jobInfo}/> },
+    { title: 'Yêu cầu', component: <Requirement  jobInfo={jobInfo.current}/> },
     // { title: 'Quyền lợi', component: <Benefit /> },
     // { title: 'Thông tin liên hệ', component: <Contact /> },
   ];
-
+  
   return (
     <>
       <div className="lg:mx-auto w-full lg:w-3/4 px-2 lg:px-4 lg:pt-5 pb-6  bg-white shadow-md border-b-2 mb-3">

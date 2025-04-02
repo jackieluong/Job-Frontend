@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { roleColorMap } from '@/data/map';
-import { Conversation, useChat, useChatStore, User } from '@/store/chatStore';
-import { Client, Stomp } from "@stomp/stompjs";
+import { Conversation, useChat, User } from '@/store/chatStore';
+import { Client } from "@stomp/stompjs";
 import SockJS from 'sockjs-client';
 import {  MessageReceived, MessageSend } from '@/lib/type';
 import { useAuth } from '@/store/userStore';
 import { formatDateTime } from '@/lib/utils';
 import ChatService from '@/services/chatService';
+
 
 
 // Dummy data for users and messages
@@ -36,11 +37,12 @@ import ChatService from '@/services/chatService';
 //     ],
 // };
 
-type MessageMap = Record<number, MessageReceived[]>;
+//map with element have key is conversation id and value is a message array
+type MessageMap = Record<number, MessageReceived[]>; 
 
 export default function ChatPage() {
     const [conversation, setConversation] = useState<Conversation | null>(null);
-    const [messages, setMessages] = useState<MessageReceived[]>([]);
+    const [messages, setMessages] = useState<MessageMap>({});
     const newMessage = useRef<HTMLInputElement>(null);
 
     const [searchUsers, setSearchUsers] = useState<User[] | null>(null);
@@ -105,7 +107,19 @@ export default function ChatPage() {
                 //     content:receivedMessage.content,
                 //     timeStamp: receivedMessage.timeStamp
                 //   }
-                  setMessages((prev) => [...prev, receivedMessage]);
+                const conId: number = receivedMessage.conversationId;
+                if(!conId) return;
+                    // const messagesMap: MessageMap = {
+                    //     ...messages,
+                    //     [conId] : [...(messages[conId] || []), receivedMessage] 
+                    // }
+
+                  setMessages((prev) => {
+                    return {
+                      ...prev,
+                      [conId]: [...(prev[conId] || []), receivedMessage],
+                    };
+                  });
                   
                 });
               },
@@ -140,27 +154,33 @@ export default function ChatPage() {
     
     
     console.log("conversation: ", conversation);
-    console.log("conversations: ", conversations);
+    
     console.log("Messages:", messages);
     const handleConversationClick = async(clickedConversation: Conversation) => {
         setConversation(clickedConversation);
         // setMessages(messagesData[userId] || []);
         // fetch messages API
         console.log("conversationId: ", clickedConversation.id);
+        if(messages[clickedConversation.id]) return;
+
         const chatData = await ChatService.fetchChatHistory(clickedConversation.id).then((response) => response.data);
         
-        const messages: MessageReceived[] = chatData.map((message) : MessageReceived => {
+        const newMsg: MessageReceived[] = chatData.map((message) : MessageReceived => {
             return {
                 senderId: message.senderId,
                 // recipientId: message.receiverId,
                 content: message.content,
                 timeStamp: message.time,
                 messageStatus: message.messageStatus,
+                conversationId: message.conversationId
             }       
         })
 
         
-        setMessages(messages);
+        setMessages((prevMessages) => ({
+            ...prevMessages,
+            [clickedConversation.id]: newMsg
+        }));
     };
     
     const handleSendMessage = (conversationId: number) => {
@@ -187,12 +207,17 @@ export default function ChatPage() {
         })
         // const updatedMessages = [...messages, { sender: 'Bạn', text: newMessage }];
 
-        const updatedMessages: MessageReceived[] = [
-            ...messages, message
-        ];
+        // const updatedMessages: MessageReceived[] = [
+        //     ...messages, message
+        // ];
 
-        setMessages(updatedMessages);
+        // setMessages(updatedMessages);
 
+           // Update message state for the correct conversation
+    setMessages((prevMessages) => ({
+        ...prevMessages,
+        [conversationId]: [...(prevMessages[conversationId] || []), message]
+    }));
         newMessage.current.value = '';
     };
 
@@ -259,18 +284,19 @@ export default function ChatPage() {
                 </div>
 
                 {/* Chat Messages */}
+                
                 <div className="flex-1 p-4 overflow-auto bg-white">
-                    {messages.map((msg, index) => (
+                    {(messages[conversation?.id] || []).map((msg, index) => (
                         <div key={index} className={`mb-2 pl-4 p-2 rounded-3xl max-w-1/2 font-medium ${msg.senderId == user.id?.toString() ? 'ml-auto bg-blue-500 text-white' : 'bg-gray-200'}`}>
                             <div className='flex flex-col gap-1'> 
-                            <div className='flex gap-1'>
+                            <div className='flex gap-1 '>
                                 <strong>{msg.senderId == user.id?.toString() ? "Bạn" : conversation?.user.name || msg.senderName }: </strong>
                                 <p className=''>{msg.content}</p> 
                             </div>
                             <p className="text-sm">{formatDateTime( msg.timeStamp || "")}</p>
                             </div>
                         </div>
-                    ))}
+                    )) }
                     <div ref={messagesEndRef}></div>
                 </div>
                 
