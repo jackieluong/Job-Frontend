@@ -1,3 +1,5 @@
+import { Value } from "@radix-ui/react-select";
+
 export const CVStatusOptions = [
     { value: "ALL", label: "Tất cả" },
     { value: "PENDING", label: "Chờ duyệt" },
@@ -12,6 +14,36 @@ export const postStatusOptions = [
     { value: "REJECTED", label: "Bị từ chối" },
     { value: "PENDING", label: "Đang chờ duyệt" },
   ]
+//   export const salaryOptions = [
+//     { minSalary: null, maxSalary: null, label: "Tất cả mức lương" },
+//     { minSalary: 0, maxSalary: 10e6, label: "Dưới 10 triệu" },
+//     { minSalary: 10e6, maxSalary: 15e6, label: '10 - 15 triệu' },
+//     { minSalary: 15e6, maxSalary: 20e6, label: '15 - 20 triệu' },
+//     { minSalary: 20e6, maxSalary: 30e6, label: '20 - 30 triệu' },
+//     { minSalary: 30e6, maxSalary: Number.MAX_VALUE, label: 'Trên 30 triệu' },
+
+
+    
+// ];
+
+export const salaryOptions = [
+    { value: "-1", label: "Tất cả mức lương" },
+    { value: "0-10e6", label: "Dưới 10 triệu" },
+    { value: "10e6-15e6", label: "10 - 15 triệu" },
+    { value: "15e6-20e6", label: "15 - 20 triệu" },
+    { value: "20e6-30e6", label: "20 - 30 triệu" },
+    { value: "30e6-10e10", label: "Trên 30 triệu" },
+];
+
+export const experienceRangeOptions = [
+    { value: "-1", label: "Tất cả kinh nghiệm" },
+    { value: "0-1", label: "Dưới 1 năm" },
+    { value: "1-2", label: "1 - 2 năm" },
+    { value: "2-3", label: "2 - 3 năm" },
+    { value: "3-5", label: "3 - 5 năm" },
+    { value: "5-100", label: "Trên 5 năm" },
+    // { value: "10-Number.MAX_VALUE", label: "Trên 10 năm" },
+];
 
   export const levelOptions = [
     {value: "INTERN", label: "Thực tập sinh"},

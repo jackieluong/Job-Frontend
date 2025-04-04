@@ -76,3 +76,53 @@ export const updateJobPostStatus = async (jobId: number, jobStatus: string) => {
     }
    
 };
+
+
+export const searchJobs = async (currentPage: number, pageSize: number, sortBy: string, ascending: boolean, keyword: string, jobType: string,
+    industry: string, level: string, minExperience: number, maxExperience: number, minSalary: number, maxSalary: number, cities: string[]
+) => {
+    
+    console.log("Cities ", cities);
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/search`,{
+            params: {
+                currentPage: currentPage,
+                pageSize: pageSize,
+                sortBy: sortBy,
+                ascending: ascending,
+                keyword: keyword,
+                jobType: jobType,
+                industry: industry,
+                level: level,
+                minExperience: minExperience,
+                maxExperience: maxExperience,
+                minSalary: minSalary,
+                maxSalary: maxSalary,
+                cities: cities
+            }
+        });
+      
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};
+
+export const saveJob = async (jobId: number) => {
+  
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,null ,{
+            params: {
+                jobId: jobId
+            }
+        });
+      
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};

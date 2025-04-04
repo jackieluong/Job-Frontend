@@ -1,3 +1,5 @@
+import { industryOptions } from "./options";
+
 // Status mappings for colors & labels
 export const statusColorMap: Record<string, string> = {
     APPROVED: "bg-green-100 text-green-800",
@@ -32,3 +34,8 @@ export const CVStatusColorMap: Record<string, string> = {
   SEEN: 'bg-blue-100 text-blue-800',
 };
 
+// Create a map where the key is the value and the value is the label
+export const industryMap: Record<string, string> = industryOptions.reduce((map, { value, label }) => {
+  map[value] = label;
+  return map;
+}, {} as Record<string, string>);

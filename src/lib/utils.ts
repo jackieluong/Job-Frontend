@@ -45,3 +45,47 @@ export function formatDateTime(isoString: string): string {
 
   return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 }
+
+
+export function getNumOfDaysInPast(timestamp: string): number {
+  const givenDate = new Date(timestamp);
+  const today = new Date();
+
+  // Normalize both dates to midnight for accurate full-day comparison
+  today.setHours(0, 0, 0, 0);
+  givenDate.setHours(0, 0, 0, 0);
+
+  // Calculate the difference in days
+  const diffInMs = today.getTime() - givenDate.getTime();
+  const daysDiff = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  // If the date is in the future, return 0
+  return daysDiff > 0 ? daysDiff : 0;
+}
+
+// Function to format the time difference as "X days/weeks/years ago"
+export function timeAgo(timestamp: string): string {
+  const givenDate = new Date(timestamp);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - givenDate.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return `${diffInSeconds} giây trước`;
+  
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} giờ trước`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} ngày trước`;
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks} tuần trước`;
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths} tháng trước`;
+
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears} năm trước`;
+}
