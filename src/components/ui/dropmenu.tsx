@@ -1,20 +1,21 @@
 
 import Link from "next/link";
-
+import React from "react";
 interface DropdownItem {
   name: string;
-  href: string;
+  href?: string; // Made optional for actions like logout
  icon: React.ReactNode;
+ onClick?: () => void; // Added click handler
 }
 
 interface DropdownMenuProps {
   items: DropdownItem[];
     isActive: boolean; // ✅ Khai báo isActive
-
+    onItemClick?: (item: DropdownItem) => void; //  Handles item clicks
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, isActive }) => {
-  console.log("Dropdown active?", isActive); // Debug xem có đúng không
+  // console.log("Dropdown active?", isActive); // Debug xem có đúng không
 
   return (
  <ul
@@ -27,6 +28,11 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, isActive }) => {
     <li
       key={idx}
       className="flex items-center px-4 py-2 hover:bg-gray-100 flex-1 md:basis-1/2 min-w-[50%]"
+      onClick={() => {
+        if(dropdown.onClick){
+          dropdown.onClick();
+        }
+      }}
     >
       {dropdown.icon}
       <Link href={dropdown.href} className="ml-3 text-gray-800">

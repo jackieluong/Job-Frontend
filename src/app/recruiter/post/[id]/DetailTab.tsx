@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { RenderLexicalContent } from '@/components/jobDescription/renderLexicalContent';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,8 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { JobPostingInfo } from '@/lib/interface';
-import { displayVNDWithPostfix } from '@/lib/utils';
+import { JobDetail } from '@/lib/interface';
+import { displayVNDWithPostfix, formatDate } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 import {
   MapPin,
   Calendar,
@@ -22,14 +25,17 @@ import {
   User,
   List,
   Pencil,
+  Hourglass,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type DetailTabProps = {
   // Define your props here
-  job: JobPostingInfo;
+  job: JobDetail;
   handleClickViewCV: () => void;
 };
+
+
 
 export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
   const router = useRouter();
@@ -41,7 +47,7 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
  
   return (
     <div>
-      <Card className="">
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Tin tuyển dụng</CardTitle>
         </CardHeader>
@@ -53,32 +59,42 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
                 <MapPin className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
                   <div className="text-gray-600 font-bold">Tỉnh/Thành phố</div>
-                  <div>{job.province}</div>
+                  <div>{job.city.map((c) => c).join(', ')}</div>
                 </div>
               </div>
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <MapPin className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
                   <div className="text-gray-600 font-bold">Quận/Huyện</div>
                   <div>{job.district}</div>
                 </div>
-              </div>
-            </div>
+              </div> */}
 
+              <div className="flex gap-2">
+                <Hourglass className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
+                <div>
+                  <div className="text-gray-600 font-bold">Kinh nghiệm</div>
+                  <div>{job.yearOfExperience} năm</div>
+                </div>
+              </div>
+              
+
+            </div>
+            
             {/* Column 2 */}
             <div className="flex flex-col gap-4">
               <div className="flex gap-2">
                 <Calendar className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
                   <div className="text-gray-600 font-bold">Ngày tạo</div>
-                  <div>{job.createdAt}</div>
+                  <div>{formatDate(job.createdAt)}</div>
                 </div>
               </div>
               <div className="flex gap-2">
                 <Calendar className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
-                  <div className="text-gray-600 font-bold">Hạn nộp</div>
-                  <div>{job.deadline}</div>
+                  <div className="text-gray-600 font-bold">Ngày cập nhật</div>
+                  <div>{formatDate(job.updatedAt)}</div>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -120,14 +136,14 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
                 <User className="h-8 w-7 te7t-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
                   <div className="text-gray-600 font-bold">Giới tính</div>
-                  <div>{job.gender}</div>
+                  <div>{job.genderRequire || "Không yêu cầu"}</div>
                 </div>
               </div>
               <div className="flex gap-2">
                 <GraduationCap className="h-7 w-7 text-gray-500 mt-1 mr-2 bg-gray-100 p-1 " />
                 <div>
                   <div className="text-gray-600 font-bold">Bằng cấp</div>
-                  <div>{job.education}</div>
+                  <div>{job.educationLevel || "Không yêu cầu"}</div>
                 </div>
               </div>
             </div>
@@ -136,8 +152,15 @@ export default function DetailTab({ job, handleClickViewCV }: DetailTabProps) {
         <CardHeader>
           <CardTitle>Chi tiết tuyển dụng</CardTitle>
         </CardHeader>
-        <CardContent>
-          <RenderLexicalContent json={job.description} />
+        <CardContent className='flex flex-col text-base'>
+          {/* <RenderLexicalContent json={job.description} /> */}
+          <div className='markdown'>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}  >{job.description}</ReactMarkdown>
+          </div>
+  
+          <div className='markdown'>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{job.detail}</ReactMarkdown>
+          </div>
         </CardContent>
 
         <CardFooter>

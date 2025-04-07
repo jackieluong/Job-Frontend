@@ -197,15 +197,26 @@ import { cn } from "@/lib/utils"; // Utility for conditional classes
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
-  curPage?: number;
+  curPage: number;
   onPageChange?: (page: number) => void;
+  pageSize: number;
+  onPageSizeChange?: (pageSize: number) => void
+  pageCount: number;
 }
 
-export function DataTablePagination<TData>({ table, curPage = 0, onPageChange }: DataTablePaginationProps<TData>) {
-  const pageCount = table.getPageCount();
+export function DataTablePagination<TData>({ table, curPage = 0, onPageChange, pageSize, onPageSizeChange, pageCount }: DataTablePaginationProps<TData>) {
+  // const pageCount = table.getPageCount();
   const currentPage = curPage;
-  const pageSize = table.getState().pagination.pageSize;
+  // const pageSize = table.getState().pagination.pageSize;
+
   
+  const handlePageChange = (event: React.MouseEvent, newPage: number) => {
+    event.preventDefault();
+    if (newPage >= 0 && newPage < pageCount) {
+      // table.setPageIndex(newPage);  // Update table's page index
+      onPageChange && onPageChange(newPage);  // Call external handler if provided
+    }
+  };
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pb-5 w-full flex-grow">
       {/* Rows per page selection */}
@@ -213,7 +224,7 @@ export function DataTablePagination<TData>({ table, curPage = 0, onPageChange }:
         <span className="text-sm font-medium">Rows per page:</span>
         <Select
           value={`${pageSize}`}
-          onValueChange={(value) => table.setPageSize(Number(value))}
+          onValueChange={(value) => onPageSizeChange && onPageSizeChange(Number(value))}
         >
           <SelectTrigger className="h-8 w-[80px]">
             <SelectValue placeholder={pageSize} />
@@ -233,7 +244,7 @@ export function DataTablePagination<TData>({ table, curPage = 0, onPageChange }:
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              onClick={() => onPageChange && onPageChange(currentPage - 1)}
+              onClick={(e) => handlePageChange(e,currentPage - 1)}
               className={cn(currentPage === 0 && "pointer-events-none opacity-50")}
               // disabled={currentPage === 0}
             />
@@ -244,7 +255,7 @@ export function DataTablePagination<TData>({ table, curPage = 0, onPageChange }:
             <PaginationItem key={page}>
               <PaginationLink
                 isActive={page === currentPage}
-                onClick={() => onPageChange && onPageChange(page)}
+                onClick={(e) => handlePageChange(e,page)}
               >
                 {page + 1}
               </PaginationLink>
@@ -255,7 +266,7 @@ export function DataTablePagination<TData>({ table, curPage = 0, onPageChange }:
 
           <PaginationItem>
             <PaginationNext
-              onClick={() => onPageChange && onPageChange(currentPage + 1)}
+              onClick={(e) =>handlePageChange(e,currentPage + 1)}
               className={cn(currentPage >= pageCount - 1 && "pointer-events-none opacity-50")}
             
             />

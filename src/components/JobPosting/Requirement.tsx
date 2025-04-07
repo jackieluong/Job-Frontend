@@ -4,11 +4,13 @@ import React from 'react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { RadioGroup, RadioItem } from '../ui/radio';
-import { genderOption } from '@/data/genderOption';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { experienceOption } from '@/data/experienceOption';
-import { levelOptions } from '@/data/levelOptions';
-import { educationOption } from '@/data/educationOption';
+import { educationOption, experienceOption, genderOption, levelOptions } from '@/data/options';
+import { InputTags } from '../multiSelect/input-tag';
+
+
+
 
 type RequirementProps = {
     // Define your props here
@@ -16,12 +18,16 @@ type RequirementProps = {
 };
 
 export default function Requirement({jobInfo}: RequirementProps) {
+
+  const handleSkillsChange = (value: string[]) => {
+    jobInfo.skills = value;
+  }
     return (
     <div>
             
       <div className="py-4 flex flex-col gap-4">
       <Label className="font-medium">Giới tính</Label>
-        <RadioGroup name='gender' onValueChange={(value) => jobInfo.gender = value}  defaultValue={jobInfo.gender} className="flex space-x-8">
+        <RadioGroup name='gender' onValueChange={(value) => jobInfo.genderRequire = value}  defaultValue={jobInfo.genderRequire} className="flex space-x-8">
         {
           genderOption.map((gender, index) => (
 
@@ -34,7 +40,7 @@ export default function Requirement({jobInfo}: RequirementProps) {
       </div>
       <div className="py-4 flex flex-col gap-4">
         <Label className="font-medium">Kinh nghiệm</Label>
-        <Select name='experience' defaultValue={jobInfo.experience.toString()} onValueChange={(value) => jobInfo.experience = Number(value)} >
+        <Select name='experience' defaultValue={jobInfo.yearOfExperience.toString()} onValueChange={(value) => jobInfo.yearOfExperience = Number(value)} >
           <SelectTrigger>
             <SelectValue placeholder="Chọn kinh nghiệm" />
           </SelectTrigger>
@@ -79,6 +85,12 @@ export default function Requirement({jobInfo}: RequirementProps) {
         </Select>
 
       </div>
+      
+      {/* <div className="py-4 flex flex-col gap-4">
+        <Label className="font-medium">Bằng cấp</Label>
+        <InputTags value={jobInfo.skills} onChange={handleSkillsChange}a></InputTags>
+
+      </div> */}
       
 
         </div>
