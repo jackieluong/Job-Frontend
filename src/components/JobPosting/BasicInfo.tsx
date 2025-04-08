@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '../ui/select';
 
-import { provinceOptions } from '@/data/locationData';
+
 import { fetchDistrict, fetchProvinces } from '@/services/locationService';
 import ReactMde from 'react-simplemde-editor';
 import ReactMarkdown from 'react-markdown';
@@ -22,7 +22,7 @@ import "easymde/dist/easymde.min.css";
 import { RadioGroup } from '@radix-ui/react-radio-group';
 
 import { RadioItem } from '../ui/radio';
-import { industryOptions, jobTypeOptions } from '@/data/options';
+import { industryOptions, jobTypeOptions, provinceOptions } from '@/data/options';
 import { MultiSelect } from '../multiSelect/multi-select';
 import { Textarea } from '../ui/textarea';
 
@@ -172,29 +172,7 @@ export default function BasicInfo({ jobInfo, setJobInfo }: BasicInfoProps) {
           <MultiSelect  variant="green" maxCount={10} options={provinceOptions} onValueChange={handleProvincesChange} defaultValue={jobInfo.city}></MultiSelect>
             
           </div>
-          {/* <div className="flex flex-col gap-4 lg:flex-1">
-            <Label className="font-medium">Quận/Huyện</Label>
-            <Select
-              name="district"
-              defaultValue={jobInfo.district}
-              onValueChange={(value) => (jobInfo.district = value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn quận/huyện" />
-              </SelectTrigger>
-              <SelectContent>
-                {districts?.map((district, index) => (
-                  <SelectItem key={index} value={district.name}>
-                    {district.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div> */}
-          {/* <div className='flex flex-col gap-4'>
-            <Label className="font-medium">Địa chỉ</Label>
-            <Input placeholder="Nhập địa điểm"></Input>
-          </div> */}
+         
         </div>
       </div>
       <div className="py-4 flex flex-col gap-4 flex-1">

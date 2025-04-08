@@ -154,6 +154,14 @@ export const jobTypeOptions = [
     }
 ];
 
+export const companySizeOption = [
+    { value: "Dưới 10 người", label: "Dưới 10 người" },
+    { value: "Từ 10 đến 50 người", label: "Từ 10 đến 50 người" },
+    { value: "Từ 50 đến 100 người", label: "Từ 50 đến 100 người" },
+    { value: "Từ 100 đến 500 người", label: "Từ 100 đến 500 người" },
+    { value: "Từ 500 đến 1000 người", label: "Từ 500 đến 1000 người" },
+    { value: "Trên 5000 người", label: "Trên 5000 người" },
+  ];
 export const provinceOptions = [
     { value: "Hà Nội", label: "Hà Nội" },
     { value: "Hồ Chí Minh", label: "Hồ Chí Minh" },

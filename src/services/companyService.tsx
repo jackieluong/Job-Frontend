@@ -1,4 +1,5 @@
 import axiosInstance from "@/config/axiosConfig";
+<<<<<<< HEAD
 import axios, { AxiosError } from "axios";
    
 export const getCompanyDetailById = async (id: number) => {
@@ -7,6 +8,17 @@ export const getCompanyDetailById = async (id: number) => {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/companies/${id}`);
     
       console.log("data id : ", response.data); // In dữ liệu trả về từ API
+=======
+
+import  { AxiosError } from "axios";
+   
+   
+export const fetchCompanyDetail = async (id: number) => {
+  
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/companies/${id}`);
+      
+>>>>>>> 90d2a926a6a7ebf28c60e12b7611060659c5a253
       return response.data; // Trả về dữ liệu
     } catch (error: AxiosError | any) {
         
@@ -14,6 +26,7 @@ export const getCompanyDetailById = async (id: number) => {
     }
    
 };
+<<<<<<< HEAD
 
 export const getJobsOfCompany  = async (id: number) => {
     try {
@@ -28,3 +41,5 @@ export const getJobsOfCompany  = async (id: number) => {
     }
 
 }
+=======
+>>>>>>> 90d2a926a6a7ebf28c60e12b7611060659c5a253

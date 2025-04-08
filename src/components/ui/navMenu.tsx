@@ -107,7 +107,7 @@ const NavMenu: React.FC = () => {
             key={index}
             className="relative group"
             onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
-            onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
+            
           >
             <Link
               href={item.href}
@@ -130,6 +130,7 @@ const NavMenu: React.FC = () => {
                   icon: iconMap[dropdown.icon], // Truyền JSX element thay vì string
                 })) ?? []}
                 isActive={activeDropdown === item.name} // ✅ Truyền trạng thái active
+                onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
               />
             )}
           </li>

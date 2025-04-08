@@ -3,6 +3,7 @@ import React from 'react';
 import { Bell, MessageSquare } from "lucide-react";
 
 import Link from 'next/link';
+import NotificationDropdown from '../notification/Notification';
 type IconSectionProps = {
     // Define your props here
 };
@@ -17,9 +18,10 @@ export default function IconSection(props: IconSectionProps) {
             <MessageSquare className="w-6 h-6 text-green-700 " />
           </Link>
 
-          <Link href="/notifications" className="relative p-2 rounded-full bg-green-200 hover:bg-green-400 transition">
+          {/* <Link href="/notifications" className="relative p-2 rounded-full bg-green-200 hover:bg-green-400 transition">
             <Bell className="w-6 h-6 text-green-700 " />
-          </Link>
+          </Link> */}
+          <NotificationDropdown />
         </div>
 
         </div>
