@@ -1,8 +1,18 @@
+"use client"
+import React from 'react';
 import Link from 'next/link';
+import NotificationDropdown from '../notification/Notification';
+import { useAuth } from '@/store/userStore';
+
 
 const NavUser = () => {
+
+  const {isAuthenticated} = useAuth();
   return (
+    
     <nav className="flex justify-end space-x-4 p-4">
+      {!isAuthenticated ? 
+      <>
       <Link href="/login">
         <button className="border border-green-500 text-green-500 px-4 py-2 rounded-lg hover:bg-green-50 transition">
           Đăng nhập
@@ -20,7 +30,13 @@ const NavUser = () => {
           Đăng tuyển & tìm hồ sơ
         </button>
       </Link>
+      </>
+      :
+
+      <NotificationDropdown />
+      }
     </nav>
+
   );
 };
 

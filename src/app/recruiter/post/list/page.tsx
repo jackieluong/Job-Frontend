@@ -81,8 +81,8 @@ export default function page(props: pageProps) {
       const fetchPosts = async () => {
         try {
           setIsLoading(true);
-          if(!user) return;
-          const data = await JobService.getPostByCompany(user.id || -1, postStatus, currentPage+1, pageSize, null, null );
+          if(!user && !user?.id) return;
+          const data = await JobService.getPostByCompany(user.id, postStatus, currentPage+1, pageSize, null, null );
           
           totalPosts.current = data.totalElement;
           pageCount.current = data.totalPage

@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 import DropdownMenu from "@/components/ui/dropmenu"; // Đảm bảo component này có sẵn và hoạt động đúng
 import { useAuth } from "@/store/userStore";
+import { useRouter } from "next/navigation";
 
 const iconMap: Record<string, JSX.Element> = {
   briefcase: <Briefcase size={18} className="text-green-500" />,
@@ -84,7 +85,12 @@ interface MenuItem {
 const NavMenu: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
+  const router = useRouter();
   const {logout} = useAuth();
+  const handleLogout = () => {
+    logout();
+    router.push("/login"); 
+  }
 const menuItems: MenuItem[] = [
   { 
     name: "Đăng tin", 
@@ -109,10 +115,10 @@ const menuItems: MenuItem[] = [
     href: "#", 
     hasDropdown: true,
     dropdownItems: [
-      { name: "Thông tin tài khoản", href: "#", icon: "fileText" },
+      { name: "Thông tin tài khoản", href: "/recruiter/account", icon: "fileText" },
       { name: "Cài đặt tài khoản", href: "#", icon: "settings" },
       
-      { name: "Đăng xuất", href: "#", icon: "logout", onClick: logout },
+      { name: "Đăng xuất", href: "#", icon: "logout", onClick: handleLogout },
     ]
   },
   
@@ -128,8 +134,10 @@ const menuItems: MenuItem[] = [
             onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
             
             // onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
-            onMouse
+            // onMouse
+            
           >
+              
             <Link
               href={item.href}
               className={`text-gray-800 hover:text-green-600 ${
@@ -152,10 +160,13 @@ const menuItems: MenuItem[] = [
                   onClick: dropdown.onClick,
                 })) ?? []}
                 isActive={activeDropdown === item.name}  // ✅ Truyền trạng thái active
-                
+                onMouseEnter={() => setActiveDropdown(item.name)}
+                onMouseLeave={() => setActiveDropdown(null)}
               />
             )}
+            
           </li>
+
         ))}
       </ul>
     </nav>

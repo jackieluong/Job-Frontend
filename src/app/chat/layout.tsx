@@ -24,7 +24,7 @@ export default function ChatLayout({
       
 
       {/* Main Content */}
-      <main className="flex-1 lg:p-6 overflow-auto bg-gray-100 ">{children}</main>
+      <main className="flex-1 lg:p-6 overflow-auto w-full bg-gray-100 ">{children}</main>
     </div>
   );
 }

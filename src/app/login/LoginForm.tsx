@@ -8,7 +8,7 @@ import { useMutationHooks } from '@/Hooks/useMutationHooks';
 import * as UserService from '@/services/userService';
 import { useRouter } from 'next/navigation';
 import AuthService from '@/services/authService';
-import { useAuth } from '@/store/userStore';
+import { useAuth, UserInfo } from '@/store/userStore';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function AuthForm() {
 
   // console.log(mutation.data);
 
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   // useEffect(() => {
   //   if (isSuccess && data?.status === "OK") {
@@ -34,14 +34,42 @@ export default function AuthForm() {
   //   }
   // }, [isSuccess, isError]);
   const isPending = false;
+  const {setUser} = useAuth();
   const onSubmit = async (formData: any) => {
     // mutation.mutate(formData);
-    const isSuccess = await login(formData.email, formData.password);
-    if (isSuccess == true) {
+    try {
+      const responseData = await AuthService.login(formData).then(
+        (response) => response.data,
+      );
+      
+      const loginUser: UserInfo = {
+        id: responseData.user.id,
+        name: responseData.user.name,
+        email: responseData.user.email,
+        role: responseData.user.role,
+      };
+      console.log('Login user: ', loginUser);
+      
+      
+      setUser(loginUser);
+
+      localStorage.setItem(
+        'accessToken',
+        JSON.stringify(responseData.accessToken),
+      );
+      localStorage.setItem('user', JSON.stringify(responseData.user));
+
       alert('Đăng nhập thành công!');
-      router.push('/home');
-    } else {
-      return;
+
+      if (responseData.user.role === 'COMPANY') {
+        router.push('/recruiter');
+      } else if (responseData.user.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/home');
+      }
+    } catch (error: any) {
+      alert(error?.data?.message || error?.message || 'Đăng nhập thất bại!');
     }
   };
 

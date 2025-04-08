@@ -121,7 +121,7 @@ export default function Page() {
   const searchKeyword = useRef<string>('');
   const [cvStatus, setCvStatus] = useState<string>(defaultOption);
   const [currentPage, setCurrentPage] = useState(0); // Track the current page
-  const [pageSize, setPageSize] = React.useState(5); // Store page
+  const [pageSize, setPageSize] = React.useState(10); // Store page
   const [cvs, setCvs] = useState<CV[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
