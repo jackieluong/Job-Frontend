@@ -126,3 +126,33 @@ export const saveJob = async (jobId: number) => {
     }
    
 };
+
+
+export const getJobDetailByIdNew = async (id: number) => {
+  
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/detail/${id}`);
+    
+      console.log("data: ", response.data); // In dữ liệu trả về từ API
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};
+
+
+export const getJobRelatedlById = async (id: number) => {
+  
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/${id}/related`);
+    
+      console.log("data: ", response.data); // In dữ liệu trả về từ API
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};
