@@ -1,15 +1,16 @@
 "use client";
-import React, {useState, useEffect} from 'react';
 import Header from "@/components/ui/header";
 import { Button } from "@/components/ui/button";
 import {Heart, CheckCircle} from "lucide-react";
-
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import Link from "next/link";
-import { getJobDetailByIdNew, getJobRelatedlById } from '@/services/jobService';
-
 import { CardContent } from "@/components/ui/card";
 import CardJob from '@/components/cardJob';
+
+import React, {useState, useEffect} from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from "next/link";
+import { deleteSaveJob, getJobDetailByIdNew, getJobRelatedlById, saveJob } from '@/services/jobService';
+import { useAuth } from '@/store/userStore';
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -53,48 +54,56 @@ function formattedDate(isoDate: string | undefined) {
 
 
 export default function cvdetail() {
-    const {id} = useParams();
-    console.log(id)
+    const { id } = useParams();
+    const router = useRouter();
+    const { user } = useAuth();
 
     const [job, setJob] = useState<JobDetail | null>(null);
     const [relatedJob, setRelatedJob] = useState<JobDetail[]>([]);
+    const [isSaved, setIsSaved] = useState(false);
+    const [showNotification, setShowNotification] = useState(false);
 
     useEffect(() => {
         if (!id) {
             console.error("Job ID is missing or undefined");
-            return; 
+            return;
         }
         const fetchDetail = async () => {
-            console.log('kkkkk')
-          try {
-             const res = await getJobDetailByIdNew(Number(id)).then((res) => res.data);
-            console.log(res)
-            setJob(res);
-            const dataRelatedJob = await getJobRelatedlById(Number(id)).then((res) => res.data);
-            
-            setRelatedJob(dataRelatedJob)
-            console.log('job: ', dataRelatedJob)
-          }catch (error) {
+        try {
+            const dataJob = await getJobDetailByIdNew(Number(id)).then(res => res.data);
+            const dataRelatedJob = await getJobRelatedlById(Number(id)).then(res => res.data);
+            setJob(dataJob);
+            setRelatedJob(dataRelatedJob);
+        } catch (error) {
             console.log('error: ', error);
-          }
         }
-    
+        };
         fetchDetail();
-    },[])
-    const [isSaved, setIsSaved] = useState(false);
-    const [showNotification, setShowNotification] = useState(false);
+    }, [id]);
 
-    const handleSaveClick = () => {
-        if (isSaved){
-            setIsSaved(false);
+    const handleSaveClick = async (id: number) => {
+        if (!user) {
+            alert("Bạn cần đăng nhập để lưu tin.");
+            router.push("/login");
+            return;
         }
-        else {
-            setIsSaved(true);
-            setShowNotification(true);
-            setTimeout(() => {
-                setShowNotification(false);
-            }, 3000); // Ẩn thông báo sau 3 giây
-        }    
+        if (isSaved) {
+            try {
+                await deleteSaveJob(Number(id))
+                setIsSaved(false)
+            } catch (error: any) {
+                console.log("Lỗi khi bỏ lưu job: ", error.mesage)
+            }
+        } else {
+            try {
+                await saveJob(Number(id));
+                setIsSaved(true);
+                setShowNotification(true);
+                setTimeout(() => setShowNotification(false), 3000);
+            } catch (error: any) {
+                console.error("Lỗi khi lưu job:", error.message);
+            }
+        }
     };
     
     return (
@@ -143,34 +152,31 @@ export default function cvdetail() {
                                 Hạn nộp hồ sơ: {formattedDate(job?.deadline)}
                             </div>
                             <div className="flex flex-row w-full gap-4 mt-1">
-                                <a href="#" className="w-full block">
-                                    <Button variant="default" size="lg" className="w-full"
-                                    >
-                                    Ứng tuyển
-                                    </Button>
-                                </a>
+                                <Button variant="default" size="lg" className="w-full"
+                                >
+                                Ứng tuyển
+                                </Button>
                                 <div>
                                     <Button 
                                         variant= "default"
                                         size="lg" 
                                         className={`w-full bg-white text-green-600 hover:bg-white border-1 border-green-500 hover:border-green-600 "}`} 
-                                        onClick={handleSaveClick}
+                                        onClick={() => handleSaveClick(job?.id)}
                                     >
                                         {isSaved ? <Heart className="fill-green-600" /> : <Heart className="" />}
-                                        {isSaved ? "Đã lưu" : "Lưu tin"}
+                                        {isSaved  ? "Đã lưu" : "Lưu tin"}
+                                        
                                     </Button>
                                     {/* Thông báo */}
                                     {showNotification && (
                                         <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-4 rounded-lg shadow-lg flex items-center gap-2">
-                                            <CheckCircle className="text-white" />
-                                            Tin đã được lưu thành công!
+                                            <CheckCircle className="text-white" />Tin đã được lưu thành công!
                                         </div>
                                     )}
                                 </div>
-                                
                             </div>
                         </div>
-             
+                        
                         <div key={job?.name} className="bg-white rounded-lg my-4 px-4 py-4">
                             <h2 className="border-l-6 border-green-500 text-xl font-bold pl-2">Chi tiết tin tuyển dụng</h2>
                             <CardContent className='flex flex-col text-base'>
@@ -180,18 +186,16 @@ export default function cvdetail() {
                                 </div>
                             </CardContent>
                             <div className="flex flex-row w-70 gap-2 mt-1">
-                                <a href="#" className="w-full block">
-                                    <Button variant="default" size="lg" className="w-full"
-                                    >
-                                    Ứng tuyển
-                                    </Button>
-                                </a>
+                                <Button variant="default" size="lg" className="w-full"
+                                >
+                                Ứng tuyển
+                                </Button>
                                 <div>
                                     <Button 
                                         variant= "default"
                                         size="lg" 
                                         className={`w-full bg-white text-green-600 hover:bg-white border-1 border-green-500 hover:border-green-600 "}`} 
-                                        onClick={handleSaveClick}
+                                        onClick={() => handleSaveClick(job?.id)}
                                     >
                                         {isSaved ? <Heart className="fill-green-600" /> : <Heart className="" />}
                                         {isSaved ? "Đã lưu" : "Lưu tin"}
@@ -232,9 +236,9 @@ export default function cvdetail() {
                                 <div className="logoCompany w-22 h-22 flex items-center justify-center border-1 border-gray-300 rounded-lg">
                                     <img className="w-auto h-auto object-contain px-2 py-2" src={job?.companyImgUrl} alt="Logo company"/>
                                 </div>
-                                <div className="">
-                                    <a href="#" className="font-semibold uppercase">{job?.companyName}</a>
-                                </div>
+                                <Link href={`/companyDetail/${job?.companyId}`} className="font-semibold uppercase">
+                                    {job?.companyName}
+                                </Link>
                             </div>
                             <div className="flex flex-row px-2 gap-2">
                                 <div className="flex gap-1 mt-0.5">

@@ -5,10 +5,10 @@ import CardJob from "@/components/cardJob"
 import CardCompany from "@/components/cardCompany"
 import { Button } from "@/components/ui/button"
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import { useAuth } from '@/store/userStore'
 import { useEffect, useState } from "react"
-
-import { getCompanyDetailById, getJobsOfCompany } from "@/services/companyService"
+import { fetchCompanyDetail, getJobsOfCompany, followCompany, getStatusFollowCompany, unFollowCompany } from "@/services/companyService"
 
 interface Company {
   id: number;
@@ -26,30 +26,33 @@ interface Company {
 
 function CompanyDetail() {
   const {id} = useParams();
+  const user = useAuth();
+  const router = useRouter();
   console.log(id)
 
   const [company, setCompany] = useState<Company | null>(null);
   const [jobsOfCompany, setJobsOfCompany] = useState([])
+  const [follow, setFollow] = useState(false)
 
   useEffect(() => {
     if (!id) {
-        console.error("Company ID is missing or undefined");
-        return;  // Prevent the API call if the ID is not available
+        console.error("Khong ton tai.");
+        return; 
     }
     const fetchDetail = async () => {
       try {
-        const res = await getCompanyDetailById(Number(id)).then((res) => res.data);
+        const dataCompany = await fetchCompanyDetail(Number(id)).then((res) => res.data);
         const jobCompany = await getJobsOfCompany(Number(id)).then((res) => res.data);
-        console.log('jobCompany: ', jobCompany)
-        console.log(res)
-        setCompany(res);
+        const status = await getStatusFollowCompany(Number(id)).then((res) => res.data);
+        setFollow(status.follow)
+        setCompany(dataCompany);
         setJobsOfCompany(jobCompany);
       }catch (error) {
         console.log('error: ', error);
       }
     }
     fetchDetail();
-  },[])
+  },[id])
 
   const handleCopyLink = () => {
     if (company?.companyWebsite) {
@@ -57,11 +60,36 @@ function CompanyDetail() {
       alert("Đã sao chép đường dẫn!");
     }
   };
+  // xu li viec follow
+  const handleFollowCompany = async (id: number) => {
+    if (!user) {
+      alert('Bạn cần đăng nhập để theo dõi công ty.')
+      router.push('/login')
+      return;
+    }
+
+    if (follow) {
+      try {
+        await unFollowCompany(Number(id));
+        setFollow(false)
+      } catch (error: any){
+        console.error("Lỗi khi bỏ theo dõi công ty:", error.message);
+      }
+    }
+    else {
+      try {
+        await followCompany(Number(id));
+        setFollow(true);
+      } catch (error: any){
+        console.error("Lỗi khi theo dõi công ty:", error.message);
+      }
+    }
+  }
 
   return (
     <div>
       <Header/>
-      <div className="bg-gray-100 px-20 py-4">
+      <div className="w-full bg-gray-100 px-20 py-4">
         <div className="flex flex-row gap-2 text-gray-700 mb-4 ">
           <h2>Danh sách Công ty {'>'} Thông tin công ty & tin tuyển dụng từ</h2>
           <p className="uppercase">{company?.name}</p>
@@ -86,7 +114,13 @@ function CompanyDetail() {
             </div>
           </div>
           <div className="px-4 pt-18">
-            <Button variant="secondary" className="text-green-500 hover:text-green-500 hover:bg-green-200">Theo dõi công ty </Button>
+            <Button 
+              variant="secondary" 
+              className="text-green-500 hover:text-green-500 hover:bg-green-200"
+              onClick={() => handleFollowCompany(company?.id)}
+              >
+                {follow? 'Đang theo dõi': '+ Theo dõi công ty'}
+            </Button>
           </div>
         </div>
         <div className="flex flex-row gap-4">
@@ -112,7 +146,7 @@ function CompanyDetail() {
                     companyName={job.companyName}
                     salary={`Từ ${job.salaryFrom} - ${job.salaryTo} VNĐ`}
                     location={job.city}
-                    imgUrl={job.companyImg}
+                    companyImgUrl={job.companyImg}
                     yearOfExperience={job?.yearOfExperience}
                   />
                 ))}

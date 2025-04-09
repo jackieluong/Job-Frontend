@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
-import { saveJob } from "@/services/jobService"
+import { saveJob, deleteSaveJob } from "@/services/jobService"
+import { useAuth } from "@/store/userStore";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 
@@ -31,22 +33,37 @@ const CardJob: React.FC<CardJobProps> = ({
   const [isSaved, setIsSaved] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
-  const handleSaveClick = async () => {
-    if (isSaved) {
-      setIsSaved(false);
-    } else {
-      try {
-        await saveJob(jobId); // 
-        setIsSaved(true);
-        setShowNotification(true);
-        setTimeout(() => {
-          setShowNotification(false);
-        }, 3000);
-      } catch (error) {
-        alert(`Lưu job thất bại: ${(error as Error).message}`);
-      }
+  const user = useAuth()
+  const router = useRouter()
+
+  const handleSaveClick = async (id: number) => {
+    if (!user) {
+        alert("Bạn cần đăng nhập để lưu tin.");
+        router.push("/login");
+        return;
     }
-  };
+
+    if (isSaved) {
+        setIsSaved(false); // có thể thay bằng gọi API hủy lưu nếu cần
+        try {
+            await deleteSaveJob(Number(id))
+            setIsSaved(false)
+            console.log('xoa thanh cong')
+        } catch (error: any) {
+            console.log("Lỗi khi bỏ lưu job: ", error.mesage)
+        }
+    } else {
+        try {
+            await saveJob(Number(id));
+            console.log(id)
+            setIsSaved(true);
+            setShowNotification(true);
+            setTimeout(() => setShowNotification(false), 3000);
+        } catch (error: any) {
+            console.error("Lỗi khi lưu job:", error.message);
+        }
+    }
+};
   
 
   return (
@@ -95,10 +112,17 @@ const CardJob: React.FC<CardJobProps> = ({
                   variant="outline"
                   size="sm"
                   className="w-full bg-gray-200 hover:bg-gray-200 rounded-xs"
-                  onClick={handleSaveClick}
-                >
+                  onClick={() => handleSaveClick(jobId)}
+                > 
                   <Heart className={`text-green-600 ${isSaved ? "fill-green-600" : ""}`} />
                 </Button>
+                {/* Thông báo */}
+                {showNotification && (
+                  <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-4 rounded-lg shadow-lg flex items-center gap-2">
+                    <CheckCircle className="text-white" />
+                    Tin đã được lưu thành công!
+                  </div>
+                )}
               </div>
             </div>
           </div>

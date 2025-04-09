@@ -118,7 +118,7 @@ export const saveJob = async (jobId: number) => {
                 jobId: jobId
             }
         });
-      
+      console.log('data job save: ', response.data)
       return response.data; // Trả về dữ liệu
     } catch (error: AxiosError | any) {
         
@@ -155,4 +155,79 @@ export const getJobRelatedlById = async (id: number) => {
         throw new Error(error.response.data.message);
     }
    
+};
+
+export const getSaveJob = async ({ currentPage, pageSize, sortBy, ascending, }
+  : {
+  currentPage: number;
+  pageSize: number;
+  sortBy: string;
+  ascending: string;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,
+      {
+        params: {
+          currentPage,
+          pageSize,
+          sortBy,
+          ascending,
+        },
+      }
+    );
+    console.log("data get save job: ", response.data);
+    return response.data;
+  } catch (error: AxiosError | any) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+
+
+export const getApplyJob = async (jobId: number, currentPage: number, pageSize: number, sortBy: string, ascending: string, applyStatus: string) => {
+  
+  try {
+    const response = await axiosInstance.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/apply/job`,
+      {
+        params: {
+          jobId,
+          currentPage,
+          pageSize,
+          sortBy,
+          ascending,
+          ...(applyStatus && { applyStatus }),
+        },
+      }
+    );
+  
+    console.log("data: ", response.data); // In dữ liệu trả về từ API
+    return response.data; // Trả về dữ liệu
+  } catch (error: AxiosError | any) {
+      
+      throw new Error(error.response.data.message);
+  }
+ 
+};
+
+
+export const deleteSaveJob = async (jobId: number) => {
+  
+  try {
+    const response = await axiosInstance.delete(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,
+      {
+        params: {
+          jobId: jobId
+        },
+      }
+    );
+    console.log("data: ", response.data); // In dữ liệu trả về từ API
+    return response.data; // Trả về dữ liệu
+  } catch (error: AxiosError | any) {
+      
+      throw new Error(error.response.data.message);
+  }
+ 
 };
