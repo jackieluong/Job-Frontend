@@ -73,6 +73,13 @@ export default function AuthForm() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_AUTHORIZATION_URL}`
+    }catch (error) {
+      console.error('Google login error:', error);
+    }
+  }
   return (
     <div className="max-w-md mx-auto bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold text-center text-green-600">
@@ -114,7 +121,7 @@ export default function AuthForm() {
       </form>
 
       <div className="flex gap-2 mt-4">
-        <button className="flex-1 bg-red-500 text-white py-2 rounded-md">
+        <button className="flex-1 bg-red-500 text-white py-2 rounded-md" onClick={handleGoogleLogin}>
           Google
         </button>
         <button className="flex-1 bg-blue-600 text-white py-2 rounded-md">
