@@ -1,8 +1,19 @@
+"use client"
+import React from 'react';
 import Link from 'next/link';
+import NotificationDropdown from '../notification/Notification';
+import { useAuth } from '@/store/userStore';
+import { MessageSquare } from 'lucide-react';
+
 
 const NavUser = () => {
+
+  const {isAuthenticated} = useAuth();
   return (
+    
     <nav className="flex justify-end space-x-4 p-4">
+      {!isAuthenticated ? 
+      <>
       <Link href="/login">
         <button className="border border-green-500 text-green-500 px-4 py-2 rounded-lg hover:bg-green-50 transition">
           Đăng nhập
@@ -20,7 +31,19 @@ const NavUser = () => {
           Đăng tuyển & tìm hồ sơ
         </button>
       </Link>
+      </>
+      :
+
+      <div className="flex items-center gap-4">
+      <Link href="/chat" className="relative p-2 rounded-full bg-green-200 hover:bg-green-400 transition">
+        <MessageSquare className="w-6 h-6 text-green-700 " />
+      </Link>
+      <NotificationDropdown />
+      </div>
+
+      }
     </nav>
+
   );
 };
 

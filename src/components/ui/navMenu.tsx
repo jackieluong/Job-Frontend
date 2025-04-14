@@ -9,11 +9,15 @@ import {
   ShieldCheck, 
   TrendingUp, 
   GraduationCap, 
-  Layers 
+  Layers, 
+  Search,
+  Heart
 } from "lucide-react";
 import DropdownMenu from "@/components/ui/dropmenu"; // Đảm bảo component này có sẵn và hoạt động đúng
 
 const iconMap: Record<string, JSX.Element> = {
+  search: <Search size={18} className="text-green-500" />,
+  heart: <Heart size={18} className="text-green-500" />,
   briefcase: <Briefcase size={18} className="text-green-500" />,
   fileText: <FileText size={18} className="text-green-500" />,
   dollarSign: <DollarSign size={18} className="text-green-500" />,
@@ -45,7 +49,9 @@ const menuItems: MenuItem[] = [
     href: "#", 
     hasDropdown: true, 
     dropdownItems: [
-      { name: "Tìm việc làm", href: "#", icon: "briefcase" },
+      { name: "Tìm việc làm", href: "/job/search", icon: "search" },
+      { name: "Việc làm đã ứng tuyển", href: "/applyJob", icon: "briefcase" },
+      { name: "Việc làm đã lưu", href: "/saveJob", icon: "heart" },
       { name: "Việc làm phù hợp", href: "#", icon: "fileText" },
       { name: "Việc làm IT", href: "#", icon: "briefcase" },
       { name: "Việc làm Senior", href: "#", icon: "fileText" },
@@ -107,7 +113,7 @@ const NavMenu: React.FC = () => {
             key={index}
             className="relative group"
             onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
-            onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
+            
           >
             <Link
               href={item.href}
@@ -130,6 +136,7 @@ const NavMenu: React.FC = () => {
                   icon: iconMap[dropdown.icon], // Truyền JSX element thay vì string
                 })) ?? []}
                 isActive={activeDropdown === item.name} // ✅ Truyền trạng thái active
+                onMouseLeave={() => item.hasDropdown && setActiveDropdown(null)}
               />
             )}
           </li>
