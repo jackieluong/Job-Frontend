@@ -9,6 +9,7 @@ import { JobPostingInfo } from '@/lib/interface';
 import React, { useRef, useState } from 'react';
 import * as JobService from "@/services/jobService";
 import { useAuth } from '@/store/userStore';
+import toast from 'react-hot-toast';
 
 const initialJobInfo: JobPostingInfo = {
   name: '',
@@ -73,6 +74,7 @@ export default function JobPosting() {
       // submit and finish job posting
 
       const data = await JobService.createJob(jobInfo.current);
+      toast.success("Tạo tin tuyển dụng thành công!");
       console.log(data);
     }
 

@@ -81,3 +81,29 @@ export interface CV {
   jobId?: string;
   coverLetter?: string;
 }
+
+// interfaces/GetJobResponse.ts
+interface GetJobResponse {
+  id: number;
+  companyName: string;
+  companyImg: string;
+  companyId: number;
+  name: string;
+  yearOfExperience: number;
+  salaryFrom: number;
+  salaryTo: number;
+  city: string[];
+  createdAt: string; // ISO date string, e.g., "2025-04-13T12:00:00Z"
+  updatedAt: string; // ISO date string
+}
+
+// interfaces/GetJobApplyResponse.ts
+export interface JobApply {
+  id: number;
+  resume: string; // URL to resume file
+  applyStatus: string; // e.g., "PENDING", "APPROVED", "REJECTED"
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  updatedBy: string;
+  job: GetJobResponse;
+}

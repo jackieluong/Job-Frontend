@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
 import RecruiterHeader from '@/components/recruiterHeader/recruiterHeader';
-import Header from '@/components/ui/header';
+import Header from '@/components/header/header';
 import { useAuth } from '@/store/userStore';
 import React from 'react';
 
@@ -10,21 +10,16 @@ export default function ChatLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-    const {user} = useAuth();
+  const { user } = useAuth();
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      {
-        user.role === "COMPANY" ? 
-        <RecruiterHeader />
-        :
-        <Header />
-      }
-      
+      {user.role === 'COMPANY' ? <RecruiterHeader /> : <Header />}
 
       {/* Main Content */}
-      <main className="flex-1 lg:p-6 overflow-auto w-full bg-gray-100 ">{children}</main>
+      <main className="flex-1 lg:p-6 overflow-auto w-full bg-gray-100 ">
+        {children}
+      </main>
     </div>
   );
 }

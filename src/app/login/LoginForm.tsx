@@ -9,6 +9,7 @@ import * as UserService from '@/services/userService';
 import { useRouter } from 'next/navigation';
 import AuthService from '@/services/authService';
 import { useAuth, UserInfo } from '@/store/userStore';
+import toast from 'react-hot-toast';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -59,7 +60,9 @@ export default function AuthForm() {
       );
       localStorage.setItem('user', JSON.stringify(responseData.user));
 
-      alert('Đăng nhập thành công!');
+      toast.success('Đăng nhập thành công!', {
+        position: 'top-center',
+      });
 
       if (responseData.user.role === 'COMPANY') {
         router.push('/recruiter');
@@ -69,7 +72,9 @@ export default function AuthForm() {
         router.push('/home');
       }
     } catch (error: any) {
-      alert(error?.data?.message || error?.message || 'Đăng nhập thất bại!');
+      toast.error(error?.data?.message || error?.message || 'Đăng nhập thất bại!', {
+        position: 'top-center',
+      });
     }
   };
 
