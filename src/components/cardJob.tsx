@@ -67,7 +67,7 @@ const CardJob: React.FC<CardJobProps> = ({
   
 
   return (
-    <div className="border border-gray-200 cursor-pointer rounded-lg mb-2">
+    <div className="border border-gray-200 cursor-pointer rounded-lg mb-2 bg-white">
       <div className="flex flex-row gap-4 px-2 py-2 hover:bg-gray-100 rounded-lg">
         <div className="left rounded-lg">
           <div className="w-30 h-30 flex items-center justify-center border border-gray-200 bg-white rounded-lg">
@@ -99,7 +99,11 @@ const CardJob: React.FC<CardJobProps> = ({
               {location.map((e) => (
                 <div key={e} className="h-[fit-content] w-[fit-content] text-xs bg-gray-300 px-1 py-1 rounded-xs">{e}</div>
               ))}
-              <div className="h-[fit-content] w-[fit-content] text-xs bg-gray-300 px-1 py-1 rounded-xs">Yêu cầu {yearOfExperience} năm kinh nghiệm</div>
+              {yearOfExperience && (
+                <div className="h-fit w-fit text-xs bg-gray-300 px-1 py-1 rounded-xs">
+                  Yêu cầu {yearOfExperience} năm kinh nghiệm
+                </div>
+              )}
             </div>
             <div className="flex flex-row gap-2">
               <a href="#" className="w-full block">
