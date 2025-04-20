@@ -160,10 +160,14 @@ export const getJobDetailByIdNew = async (id: number) => {
 };
 
 
-export const getJobRelatedlById = async (id: number) => {
+export const getJobRelatedlById = async (id: number, keyword: string) => {
   
     try {
-        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/${id}/related`);
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/${id}/related`, {            
+            params: {
+                keyword: keyword
+            }
+        });
     
       console.log("data: ", response.data); // In dữ liệu trả về từ API
       return response.data; // Trả về dữ liệu
