@@ -1,4 +1,4 @@
-import JobSearchCard from '@/components/jobSearchCard/JobSearchCard';
+import JobSearchCard from '@/components/card/JobSearchCard';
 import Pagination from '@/components/pagination/Pagination';
 import { JobSearchInfo } from '@/lib/type';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';

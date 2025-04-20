@@ -110,6 +110,23 @@ export const searchJobs = async (currentPage: number, pageSize: number, sortBy: 
    
 };
 
+// export const saveJob = async (jobId: number) => {
+  
+//     try {
+//         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,null ,{
+//             params: {
+//                 jobId: jobId
+//             }
+//         });
+      
+//       return response.data; // Trả về dữ liệu
+//     } catch (error: AxiosError | any) {
+        
+//         throw new Error(error.response.data.message);
+//     }
+   
+// };
+
 export const saveJob = async (jobId: number) => {
   
     try {

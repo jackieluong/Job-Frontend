@@ -78,3 +78,48 @@ export const updateCVStatus = async (resumeId: number, applyStatus: string) => {
     }
    
 };
+
+export const applyForJob = async (formData: FormData) => {
+  
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/apply`, 
+            formData, {
+                headers:{
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
+      
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};
+
+
+export const fetchAppliedJobsByUser = async (currentPage: number, 
+    pageSize: number, sortBy: string | null, ascending: boolean | null) => {
+    
+
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/apply`, 
+            {
+                params: {
+                    currentPage: currentPage,
+                    pageSize: pageSize,
+                    sortBy: sortBy,
+                    ascending: ascending,
+                    
+                }
+            }
+        );
+      
+      return response.data; // Trả về dữ liệu
+    } catch (error: AxiosError | any) {
+        
+        throw new Error(error.response.data.message);
+    }
+   
+};

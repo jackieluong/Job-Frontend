@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import NotificationDropdown from '../notification/Notification';
 import { useAuth } from '@/store/userStore';
+import { MessageSquare } from 'lucide-react';
 
 
 const NavUser = () => {
@@ -33,7 +34,13 @@ const NavUser = () => {
       </>
       :
 
+      <div className="flex items-center gap-4">
+      <Link href="/chat" className="relative p-2 rounded-full bg-green-200 hover:bg-green-400 transition">
+        <MessageSquare className="w-6 h-6 text-green-700 " />
+      </Link>
       <NotificationDropdown />
+      </div>
+
       }
     </nav>
 

@@ -1,3 +1,4 @@
+import axiosInstance from "@/config/axiosConfig";
 import axios, { AxiosError } from "axios";
 
 
@@ -18,7 +19,17 @@ class AuthService{
             throw new Error(error.response.data.message);
         }
     }
-        
+    
+    static async handleAuthCallBack(){
+        try {
+            const response = await axiosInstance.get(`${apiUrl}/oauth2/success`);
+            
+            return response.data;
+        } catch (error: AxiosError | any) {
+            
+            throw new Error(error.response.data.message);
+        }
+    }
 }
 
 export default AuthService;

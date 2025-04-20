@@ -9,6 +9,7 @@ import * as UserService from '@/services/userService';
 import { useRouter } from 'next/navigation';
 import AuthService from '@/services/authService';
 import { useAuth, UserInfo } from '@/store/userStore';
+import toast from 'react-hot-toast';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -59,7 +60,9 @@ export default function AuthForm() {
       );
       localStorage.setItem('user', JSON.stringify(responseData.user));
 
-      alert('Đăng nhập thành công!');
+      toast.success('Đăng nhập thành công!', {
+        position: 'top-center',
+      });
 
       if (responseData.user.role === 'COMPANY') {
         router.push('/recruiter');
@@ -69,10 +72,19 @@ export default function AuthForm() {
         router.push('/home');
       }
     } catch (error: any) {
-      alert(error?.data?.message || error?.message || 'Đăng nhập thất bại!');
+      toast.error(error?.data?.message || error?.message || 'Đăng nhập thất bại!', {
+        position: 'top-center',
+      });
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_AUTHORIZATION_URL}`
+    }catch (error) {
+      console.error('Google login error:', error);
+    }
+  }
   return (
     <div className="max-w-md mx-auto bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold text-center text-green-600">
@@ -114,7 +126,7 @@ export default function AuthForm() {
       </form>
 
       <div className="flex gap-2 mt-4">
-        <button className="flex-1 bg-red-500 text-white py-2 rounded-md">
+        <button className="flex-1 bg-red-500 text-white py-2 rounded-md" onClick={handleGoogleLogin}>
           Google
         </button>
         <button className="flex-1 bg-blue-600 text-white py-2 rounded-md">
