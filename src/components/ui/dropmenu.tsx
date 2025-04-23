@@ -62,6 +62,7 @@ interface DropdownMenuProps {
   isActive: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  className?: string;
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -69,6 +70,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   isActive,
   onMouseEnter,
   onMouseLeave,
+  className,
 }) => {
   return (
     <ul
@@ -77,7 +79,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       className={`absolute left-0 top-full mt-4 min-w-[400px] max-w-[800px] max-h-[88vh]
       bg-white rounded-lg border shadow-lg p-2 flex flex-wrap gap-2 z-50
       transition-all duration-300 ease-in-out
-      ${isActive ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+      ${isActive ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}
+      ${className ?? "left-0 top-full"}`}
     >
       {items.map((dropdown, idx) => (
         <li
@@ -86,9 +89,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
           onClick={() => dropdown.onClick?.()}
         >
           {dropdown.icon}
-          <Link href={dropdown.href ?? "#"} className="ml-3 text-gray-800">
-            {dropdown.name}
-          </Link>
+          {dropdown.href ? (
+            <Link href={dropdown.href} className="ml-3 text-gray-800">
+              {dropdown.name}
+            </Link>
+          ) : (
+            <div className="ml-3 text-gray-800">{dropdown.name}</div>
+          )}
         </li>
       ))}
     </ul>

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import AuthService from '@/services/authService';
 import { useAuth, UserInfo } from '@/store/userStore';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -86,63 +87,78 @@ export default function AuthForm() {
     }
   }
   return (
-    <div className="max-w-md mx-auto bg-white p-6 shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold text-center text-green-600">
-        Chào mừng bạn đã quay trở lại
-      </h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            {...register('email', { required: 'Email không được để trống' })}
-            className="mt-1 w-full px-3 py-2 border rounded-md"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
+    <div className="min-h-screen flex justify-center items-center">
+      {/* Form login */}
+      <div className="flex bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="max-w-md w-full p-6">
+          <h2 className="text-2xl font-bold text-center text-green-600">
+            Chào mừng bạn đã quay trở lại
+          </h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+            <div>
+              <label className="block text-sm font-medium">Email</label>
+                <input
+                  type="email"
+                  {...register('email', { required: 'Email không được để trống' })}
+                  className="mt-1 w-full px-3 py-2 border rounded-md"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium">Mật khẩu</label>
+                <input
+                  type="password"
+                  {...register('password', {
+                    required: 'Mật khẩu không được để trống',
+                  })}
+                  className="mt-1 w-full px-3 py-2 border rounded-md"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password.message}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                variant="default"
+                className="w-full text-white py-2 mt-4 rounded-md"
+              >
+                {isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
+              </Button>
+            </form>
+
+          <div className="flex gap-2 mt-4">
+            <button className="flex-1 bg-red-500 text-white py-2 rounded-md" onClick={handleGoogleLogin}>
+              Google
+            </button>
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded-md">
+              Facebook
+            </button>
+            <button className="flex-1 bg-blue-800 text-white py-2 rounded-md">
+              LinkedIn
+            </button>
+          </div>
+
+          <p className="text-center mt-4 text-sm">
+            Bạn chưa có tài khoản?{' '}
+            <a href="/register" className="text-green-600">
+              Đăng ký ngay
+            </a>
+          </p>
         </div>
 
-        <div className="mt-4">
-          <label className="block text-sm font-medium">Mật khẩu</label>
-          <input
-            type="password"
-            {...register('password', {
-              required: 'Mật khẩu không được để trống',
-            })}
-            className="mt-1 w-full px-3 py-2 border rounded-md"
+        {/* Ảnh kế bên form, cao bằng form */}
+        <div className="w-68 h-auto">
+          <img
+            src="/assets/loginpage.png"
+            alt="Login"
+            className="h-full object-contain"
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
         </div>
-
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 mt-4 rounded-md"
-        >
-          {isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
-        </button>
-      </form>
-
-      <div className="flex gap-2 mt-4">
-        <button className="flex-1 bg-red-500 text-white py-2 rounded-md" onClick={handleGoogleLogin}>
-          Google
-        </button>
-        <button className="flex-1 bg-blue-600 text-white py-2 rounded-md">
-          Facebook
-        </button>
-        <button className="flex-1 bg-blue-800 text-white py-2 rounded-md">
-          LinkedIn
-        </button>
       </div>
-
-      <p className="text-center mt-4 text-sm">
-        Bạn chưa có tài khoản?{' '}
-        <a href="/register" className="text-green-600">
-          Đăng ký ngay
-        </a>
-      </p>
     </div>
   );
 }

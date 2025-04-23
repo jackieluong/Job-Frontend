@@ -31,3 +31,22 @@ class UserService {
 }
 
 export default UserService
+
+export const postRegister  = async (data: {
+  name: string;
+  email: string;
+  password: string;
+}) => {
+  try {
+    const response = await axiosInstance.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/register`,
+      data
+    );
+    console.log('status: ', response.data.status)
+    console.log('resgiter: ', response.data)
+    return response.data;
+  } catch (error: AxiosError | any) {
+    throw new Error(error.response.data.message);
+  }
+  
+};

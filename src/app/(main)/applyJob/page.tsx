@@ -245,9 +245,9 @@ export default function Page() {
                       Bắt đầu sự nghiệp mơ ước với hàng nghìn việc làm chất
                       lượng tại TopCV
                     </p>
-                    <a href="#">
+                    <Link href="/job/search">
                       <Button variant="default">Tìm việc ngay</Button>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}
