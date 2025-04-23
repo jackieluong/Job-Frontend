@@ -82,12 +82,14 @@ export default function cvdetail() {
         const dataJob = await getJobDetailByIdNew(Number(id)).then(
           (res) => res.data,
         );
-        const dataRelatedJob = await getJobRelatedlById(Number(id)).then(
-          (res) => res.data,
-        );
         setJob(dataJob);
+
+        // const dataRelatedJob = await getJobRelatedlById(Number(id), job.name).then(
+        //   (res) => res.data,
+        // );
+        
         setIsSaved(dataJob.saved);
-        setRelatedJob(dataRelatedJob);
+        // setRelatedJob(dataRelatedJob);
       } catch (error) {
         console.log('error: ', error);
       }
@@ -95,6 +97,22 @@ export default function cvdetail() {
     fetchDetail();
   }, [id]);
 
+  useEffect(() => {
+    const fetchRelatedJob = async () => {
+      if (!job) return;
+      try {
+        const dataRelatedJob = await getJobRelatedlById(Number(id), job.name).then(
+          (res) => res.data,
+        );
+        setRelatedJob(dataRelatedJob);
+      } catch (error) {
+        console.log('error: ', error);
+      }
+    };
+
+    fetchRelatedJob();
+
+  }, [job]);
   const handleSaveClick = async (id: number) => {
     if (!user) {
       alert('Bạn cần đăng nhập để lưu tin.');
