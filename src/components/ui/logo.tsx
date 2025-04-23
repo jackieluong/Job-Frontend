@@ -4,7 +4,7 @@ import Image from "next/image";
 const Logo = () => {
   return (
     <div className="flex items-center">
-      <Image src="/assets/logo.jpg" alt="TopCV Logo" width={120} height={40} />
+      <Image src="/assets/logoNextJob2.png" alt="TopCV Logo" width={65} height={20} />
     </div>
   );
 };

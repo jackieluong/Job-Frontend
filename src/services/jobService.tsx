@@ -248,3 +248,30 @@ export const deleteSaveJob = async (jobId: number) => {
   }
  
 };
+
+
+export const getJobForHomepage = async ({ currentPage, pageSize, sortBy, ascending, }
+  : {
+  currentPage: number;
+  pageSize: number;
+  sortBy: string;
+  ascending: string;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,
+      {
+        params: {
+          currentPage,
+          pageSize,
+          sortBy,
+          ascending,
+        },
+      }
+    );
+    console.log("data get save job: ", response.data);
+    return response.data;
+  } catch (error: AxiosError | any) {
+    throw new Error(error.response.data.message);
+  }
+};

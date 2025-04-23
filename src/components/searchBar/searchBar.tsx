@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Input } from '../ui/input';
 import { BriefcaseBusiness, MapPin, Search } from 'lucide-react';
 import { MultiSelect } from '../multiSelect/multi-select';
@@ -41,10 +41,17 @@ export default function SearchBar({
     onSearchClick,
     onClickReset
 }: SearchBarProps) {
-
+  console.log('searchbar: ', keywordRef)
   console.log("Cities ", city);
   console.log("JobType ", jobType);
   console.log("Salary ", salaryRange);
+  const [keyword, setKeyword] = React.useState<string>('');
+
+  useEffect(() => {
+    setKeyword(keywordRef?.current || '');
+  }, [keywordRef?.current]); // thêm vào dependency để đồng bộ khi ref thay đổi  
+  
+
   return (
     <div className="min-h-[100px] flex flex-col gap-4 shadow-2xl">
 
@@ -58,7 +65,15 @@ export default function SearchBar({
           className="pl-10 w-1/2 lg:w-4/7  text-black text-base rounded-r-none  h-full"
           placeholder="Vị trí tuyển dụng"
           // defaultValue={keywordRef?.current}
-          onChange={(e) => (keywordRef.current = e.target.value)}
+          value={keyword}
+          onChange={(e) => {
+            const value = e.target.value;
+            setKeyword(value);
+            if (keywordRef) keywordRef.current = value;
+            if (value === '' && onSearchClick) {
+              onSearchClick(); // fetch lại job list mặc định
+            }
+          }}
           // value={keywordRef?.current || ''} // Controlled input
         />
 

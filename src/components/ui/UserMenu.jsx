@@ -13,8 +13,8 @@ const UserMenu = () => {
         <MessageCircle className="text-green-600 w-5 h-5" />
       </button>
 
-      {/* Avatar */}
-      {/* <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+      {/* Avatar
+      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
         <Image src="/avatar.png" alt="User Avatar" width={32} height={32} />
       </div> */}
     </div>
