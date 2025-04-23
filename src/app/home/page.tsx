@@ -182,7 +182,7 @@ function page() {
                         </div>
                       </div>
                       <div className="right-section flex flex-col">
-                        <Link href={`/jobdetail/${job.id}`} className="text-base font-semibold hover:text-green-600 line-clamp-1">
+                        <Link href={`/job/${job.id}`} className="text-base font-semibold hover:text-green-600 line-clamp-1">
                           {job.name}
                         </Link>
                         <Link href={`/company/${job.companyId}`} className="text-base text-gray-600 uppercase line-clamp-1">
