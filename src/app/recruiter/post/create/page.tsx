@@ -1,4 +1,3 @@
-
 'use client';
 
 import BasicInfo from '@/components/JobPosting/BasicInfo';
@@ -7,7 +6,7 @@ import Contact from '@/components/JobPosting/Contact';
 import Requirement from '@/components/JobPosting/Requirement';
 import { JobPostingInfo } from '@/lib/interface';
 import React, { useRef, useState } from 'react';
-import * as JobService from "@/services/jobService";
+import * as JobService from '@/services/jobService';
 import { useAuth } from '@/store/userStore';
 import toast from 'react-hot-toast';
 
@@ -18,44 +17,46 @@ const initialJobInfo: JobPostingInfo = {
   salaryFrom: 0,
   salaryTo: 0,
   quantity: 0,
-  jobType: "FULL_TIME",
-  level: "INTERN",
-  educationLevel: "NONE",
+  jobType: 'FULL_TIME',
+  level: 'INTERN',
+  educationLevel: 'NONE',
   yearOfExperience: 0,
   description: '',
   deadline: '',
-  jobStatus: "PENDING",
+  jobStatus: 'PENDING',
   companyId: 0,
   industry: '',
   genderRequire: 'NONE',
   detail: '',
-
-}  
+};
 
 export default function JobPosting() {
   const jobInfo = useRef<JobPostingInfo>({
-  name: '',
-  city: [],
-  skills: [],
-  salaryFrom: 0,
-  salaryTo: 0,
-  quantity: 0,
-  jobType: "FULL_TIME",
-  level: "INTERN",
-  educationLevel: "NONE",
-  yearOfExperience: 0,
-  description: '',
-  deadline: '',
-  jobStatus: "PENDING",
-  companyId: useAuth().user.id || -1,
-  industry: '',
-  genderRequire: 'NONE',
-  detail: '',
-  }); 
+    name: '',
+    city: [],
+    skills: [],
+    salaryFrom: 0,
+    salaryTo: 0,
+    quantity: 0,
+    jobType: 'FULL_TIME',
+    level: 'INTERN',
+    educationLevel: 'NONE',
+    yearOfExperience: 0,
+    description: '',
+    deadline: '',
+    jobStatus: 'PENDING',
+    companyId: useAuth().user.id || -1,
+    industry: '',
+    genderRequire: 'NONE',
+    detail: '',
+  });
   const [activeTab, setActiveTab] = useState<number>(0);
- 
+
   // Handles form submission at every step
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>, step?: number) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    step?: number,
+  ) => {
     e.preventDefault();
     console.log(jobInfo);
     const formData = new FormData(e.currentTarget);
@@ -66,33 +67,28 @@ export default function JobPosting() {
       console.log(`${key}: ${value}`);
     }
 
-   
     // If a step number is provided, navigate to that step
     if (step !== undefined && step < tabs.length) {
       setActiveTab(step);
-    }else if(step === tabs.length){
+    } else if (step === tabs.length) {
       // submit and finish job posting
 
       const data = await JobService.createJob(jobInfo.current);
-      toast.success("Tạo tin tuyển dụng thành công!");
+      toast.success('Tạo tin tuyển dụng thành công!');
       console.log(data);
     }
-
-     
-    
-
   };
 
   const tabs = [
     {
       title: 'Thông tin tuyển dụng',
-      component: <BasicInfo jobInfo={jobInfo.current}  />,
+      component: <BasicInfo jobInfo={jobInfo.current} />,
     },
-    { title: 'Yêu cầu', component: <Requirement  jobInfo={jobInfo.current}/> },
+    { title: 'Yêu cầu', component: <Requirement jobInfo={jobInfo.current} /> },
     // { title: 'Quyền lợi', component: <Benefit /> },
     // { title: 'Thông tin liên hệ', component: <Contact /> },
   ];
-  
+
   return (
     <>
       <div className="lg:mx-auto w-full lg:w-3/4 px-2 lg:px-4 lg:pt-5 pb-6  bg-white shadow-md border-b-2 mb-3">
@@ -156,7 +152,7 @@ export default function JobPosting() {
             type="submit" // This will trigger form submission
             className={`cursor-pointer px-4 py-2 rounded-md ${
               activeTab < tabs.length - 1
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                ? 'bg-green-500 text-white hover:bg-green-600'
                 : 'bg-green-500 text-white hover:bg-green-600'
             }`}
           >

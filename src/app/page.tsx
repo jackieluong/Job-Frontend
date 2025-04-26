@@ -1,10 +1,9 @@
-import React from "react";
-import Image from "next/image";
-import { redirect } from "next/navigation";
+import React from 'react';
+import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-
-  redirect("/home");
+  redirect('/home');
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}

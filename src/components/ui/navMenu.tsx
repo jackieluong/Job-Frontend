@@ -99,7 +99,7 @@ const menuItems: MenuItem[] = [
       { name: "Thị trường và xu hướng tuyển dụng", href: "#", icon: "trendingUp" }
     ]
   },
-  { name: "TopCV Pro", href: "#", badge: "Pro" }
+  
 ];
 
 const NavMenu: React.FC = () => {

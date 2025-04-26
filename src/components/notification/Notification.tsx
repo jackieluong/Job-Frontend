@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 // import React from 'react';
 
@@ -14,18 +14,18 @@
 //     );
 // }
 
-import React, { useEffect, useRef, useState } from "react";
-import { Bell, Check } from "lucide-react";
+import React, { useEffect, useRef, useState } from 'react';
+import { Bell, Check } from 'lucide-react';
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { formatDateTime } from "@/lib/utils";
-import { fetchNotifications } from "@/services/notificationService";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { formatDateTime } from '@/lib/utils';
+import { fetchNotifications } from '@/services/notificationService';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 type Notification = {
   id: string;
@@ -37,7 +37,7 @@ type Notification = {
 };
 
 export default function NotificationDropdown() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const stompClientRef = useRef<Client | null>(null);
 
@@ -45,80 +45,77 @@ export default function NotificationDropdown() {
     // Simulate fetching notifications from an API or local storage
     const fetchUserNotifications = async () => {
       const data = await fetchNotifications().then((res) => res.data);
-      
+
       setNotifications(data);
     };
-    
+
     fetchUserNotifications();
   }, []);
 
-     useEffect(() => {
-    
-            const connect = () => {
-                if(stompClientRef.current !== null) return;
-    
-                const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || "");
-                const client = new Client({
-                  webSocketFactory: () => socket,
-                  connectHeaders: {
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
-                  },
-                  debug: (str) => {
-                    console.log("STOMP Debug:", str);
-                  },
-                 
-                  onConnect: (frame) => {
-                    // console.log("Connected to WebSocket, session ID:", frame.headers);
-                    console.log("Connected to WebSocket, headers:", frame.headers);
-                    client.subscribe(process.env.NEXT_PUBLIC_PRIVATE_QUEUE_NOTIFICATION || "", (message) => {
-                      console.log("Received message:", JSON.parse(message.body));
-                      const receivedMessage: Notification = JSON.parse(message.body);
-                      const newNotification: Notification = {
-                        id: receivedMessage.id,
-                        title: receivedMessage.title,
-                        message: receivedMessage.message,
-                        read: false,
-                        link: receivedMessage.link,
-                        createdAt: receivedMessage.createdAt
-                      }
-                   
-                      setNotifications((prev) => [...prev, newNotification]);
-                      
-                    });
-                  },
-    
-                  onDisconnect: () => {
-                    console.log("Disconnected from WebSocket on ondisconnect func");
-    
-                  },
-                  onStompError: (frame) => {
-                    console.error("Broker reported error: " + frame.headers["message"]);
-                    console.error("Additional details: " + frame.body);
-                  },
-                });
-                client.activate();
-                // setStompClient(client);
-                stompClientRef.current = client;
+  useEffect(() => {
+    const connect = () => {
+      if (stompClientRef.current !== null) return;
+
+      const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
+      const client = new Client({
+        webSocketFactory: () => socket,
+        connectHeaders: {
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
+        },
+        debug: (str) => {
+          console.log('STOMP Debug:', str);
+        },
+
+        onConnect: (frame) => {
+          // console.log("Connected to WebSocket, session ID:", frame.headers);
+          console.log('Connected to WebSocket, headers:', frame.headers);
+          client.subscribe(
+            process.env.NEXT_PUBLIC_PRIVATE_QUEUE_NOTIFICATION || '',
+            (message) => {
+              console.log('Received message:', JSON.parse(message.body));
+              const receivedMessage: Notification = JSON.parse(message.body);
+              const newNotification: Notification = {
+                id: receivedMessage.id,
+                title: receivedMessage.title,
+                message: receivedMessage.message,
+                read: false,
+                link: receivedMessage.link,
+                createdAt: receivedMessage.createdAt,
               };
-            
-            
-                connect();
-            
-            
-            return () => {
-              // Cleanup function
-              if (stompClientRef.current) {
-                stompClientRef.current?.deactivate();
-                stompClientRef.current = null;
-                console.log("Disconnected from WebSocket");
-              }
-            };
-          }, []);
-        
+
+              setNotifications((prev) => [...prev, newNotification]);
+            },
+          );
+        },
+
+        onDisconnect: () => {
+          console.log('Disconnected from WebSocket on ondisconnect func');
+        },
+        onStompError: (frame) => {
+          console.error('Broker reported error: ' + frame.headers['message']);
+          console.error('Additional details: ' + frame.body);
+        },
+      });
+      client.activate();
+      // setStompClient(client);
+      stompClientRef.current = client;
+    };
+
+    connect();
+
+    return () => {
+      // Cleanup function
+      if (stompClientRef.current) {
+        stompClientRef.current?.deactivate();
+        stompClientRef.current = null;
+        console.log('Disconnected from WebSocket');
+      }
+    };
+  }, []);
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   };
 
@@ -137,23 +134,29 @@ export default function NotificationDropdown() {
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-110 px-0">
-        <h4 className="font-semibold text-base border-b-1 pb-3 px-4 border-gray-200">Thông báo</h4>
+        <h4 className="font-semibold text-base border-b-1 pb-3 px-4 border-gray-200">
+          Thông báo
+        </h4>
         <div className="max-h-70 overflow-y-auto ">
           {notifications.length === 0 && (
-            <p className="text-base text-muted-foreground flex justify-center">Không có thông báo mới</p>
+            <p className="text-base text-muted-foreground flex justify-center">
+              Không có thông báo mới
+            </p>
           )}
           {notifications.map((n) => (
             <div
               key={n.id}
               className={`py-3 px-4 border-b-1 hover:bg-accent cursor-pointer flex items-start justify-between ${
-                !n.read ? "bg-accent" : ""
+                !n.read ? 'bg-accent' : ''
               }`}
               onClick={() => markAsRead(n.id)}
             >
               <div>
                 <p className="font-medium text-black">{n.title}</p>
                 <p className="text-sm text-muted-foreground">{n.message}</p>
-                <p className="text-xs text-muted-foreground">{formatDateTime(n.createdAt)} </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDateTime(n.createdAt)}{' '}
+                </p>
               </div>
               {!n.read && <Check className="w-4 h-4 text-green-500" />}
             </div>

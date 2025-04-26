@@ -1,21 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { JobDetail } from '@/lib/interface';
-import {  displayVNDWithPostfix, formatDate } from '@/lib/utils';
+import { displayVNDWithPostfix, formatDate } from '@/lib/utils';
 import {
   MapPin,
-  
   DollarSign,
-  
   Check,
-  
   Clock,
   List,
   Pencil,
   Users2,
-
   Eye,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -25,14 +27,13 @@ import CVListTab from './CVListTab';
 import DetailTab from './DetailTab';
 import { getJobDetailById } from '@/services/jobService';
 
-
 const initJob: JobDetail = {
   name: 'Frontend Developer',
   industry: 'Technology',
   city: ['Hà Nội'],
-  
+
   jobType: 'FULL_TIME',
-  description: "",
+  description: '',
   salaryFrom: 10000000,
   salaryTo: 20000000,
   deadline: '2025-04-15',
@@ -47,16 +48,15 @@ const initJob: JobDetail = {
   view: 40,
 };
 
- const totalCvs = 20;
+const totalCvs = 20;
 
 export default function page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTabParam = Number.parseInt(searchParams?.get('activeTab') || '0');
-  
-  const {id} = useParams();
 
-  
+  const { id } = useParams();
+
   const [activeTab, setActiveTab] = useState(activeTabParam || 0);
   // const { id } = router.query;
   const [job, setJob] = useState<JobDetail>(initJob);
@@ -67,31 +67,31 @@ export default function page() {
         const res = await getJobDetailById(Number(id)).then((res) => res.data);
 
         setJob(res);
-      }catch (error) {
+      } catch (error) {
         console.log(error);
       }
-    }
+    };
 
     fetchDetail();
-  },[])
+  }, []);
   const handleClickEdit = () => {
     router.push(`/recruiter/post/create`);
   };
 
   const handleClickViewCV = () => {
-      setActiveTab(1);
-  }
+    setActiveTab(1);
+  };
 
   const tabs = [
     {
-      key:"detail",
+      key: 'detail',
       title: 'Tin tuyển dụng',
-      component: <DetailTab job={job} handleClickViewCV={handleClickViewCV}  />,
+      component: <DetailTab job={job} handleClickViewCV={handleClickViewCV} />,
     },
     {
-      key:"cvList", 
-      title: 'Danh sách CV', 
-      component: <CVListTab  job={job}/> 
+      key: 'cvList',
+      title: 'Danh sách CV',
+      component: <CVListTab job={job} />,
     },
     // { title: 'Quyền lợi', component: <Benefit /> },
     // { title: 'Thông tin liên hệ', component: <Contact /> },
@@ -103,7 +103,7 @@ export default function page() {
   //   // ["benefit", { title: "Quyền lợi", component: <Benefit /> }],
   //   // ["contact", { title: "Thông tin liên hệ", component: <Contact /> }],
   // ]);
-  
+
   return (
     <div>
       <Card className="lg:mx-auto w-full lg:w-3/4 mb-5">
@@ -121,7 +121,8 @@ export default function page() {
               <div className="flex flex-col gap-1">
                 <div className="font-semibold">Mức lương</div>
                 <div>
-                  {displayVNDWithPostfix (job.salaryFrom)} - {displayVNDWithPostfix(job.salaryTo)} VND
+                  {displayVNDWithPostfix(job.salaryFrom)} -{' '}
+                  {displayVNDWithPostfix(job.salaryTo)} VND
                 </div>
               </div>
             </div>
@@ -157,7 +158,6 @@ export default function page() {
                 <div>{job.experience} năm</div>
               </div>
             </div> */}
-
           </div>
 
           <div className="mt-4 text-left">
@@ -168,7 +168,11 @@ export default function page() {
           </div>
 
           <div className=" my-5 flex flex-col lg:flex-row gap-5">
-            <Button size="lg" className=" lg:flex-[3] py-6" onClick={handleClickViewCV}>
+            <Button
+              size="lg"
+              className=" lg:flex-[3] py-6"
+              onClick={handleClickViewCV}
+            >
               <List className="w-7 h-7"></List>
               <span className="font-bold">Xem danh sách CV</span>
             </Button>
@@ -186,14 +190,16 @@ export default function page() {
         </CardHeader>
       </Card>
 
-     {/* Tabs Section */}
-     <div className="lg:mx-auto w-full lg:w-3/4">
+      {/* Tabs Section */}
+      <div className="lg:mx-auto w-full lg:w-3/4">
         <div className="flex border-b border-gray-300">
           {tabs.map((tab, index) => (
             <button
               key={index}
               className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === index ? "border-green-500 text-green-500" : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === index
+                  ? 'border-green-500 text-green-500'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               onClick={() => setActiveTab(index)}
             >
@@ -205,8 +211,6 @@ export default function page() {
         {/* Tab Content */}
         <div className="py-4">{tabs[activeTab].component}</div>
       </div>
-        
-
     </div>
   );
 }

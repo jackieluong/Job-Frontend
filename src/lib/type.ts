@@ -33,4 +33,5 @@ export type JobSearchInfo = {
   createdAt: string;
   updatedAt: string | null;
   industry: string
+  saved: boolean
 }

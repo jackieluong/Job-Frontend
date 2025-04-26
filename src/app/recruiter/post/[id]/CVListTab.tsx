@@ -25,8 +25,6 @@ import { getCVByJob, updateCVStatus } from '@/services/applyService';
 import { CVStatusColorMap, CVStatusLabelMap } from '@/data/map';
 import { CVStatus, JobStatus } from '@/lib/enums';
 
-
-
 // Date formatter
 
 type CVListTabProps = {
@@ -130,13 +128,18 @@ export default function CVListTab({ job }: CVListTabProps) {
       try {
         setIsLoading(true);
         if (!job) return;
-        const data = await getCVByJob(Number.parseInt(job.id), cvStatus, currentPage + 1, pageSize, null, null,
+        const data = await getCVByJob(
+          Number.parseInt(job.id),
+          cvStatus,
+          currentPage + 1,
+          pageSize,
+          null,
+          null,
         );
 
         totalCVs.current = data.totalElement;
         pageCount.current = data.totalPage;
         setCvs(data.data);
-
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -158,8 +161,6 @@ export default function CVListTab({ job }: CVListTabProps) {
     );
 
     const res = await updateCVStatus(Number.parseInt(cv.id), newStatus);
-    
-    
   };
 
   const handleClickViewCV = (cv: CV) => {
@@ -177,9 +178,7 @@ export default function CVListTab({ job }: CVListTabProps) {
       accessorKey: 'jobName',
       header: 'Vị trí',
       cell: ({ row }) => (
-        <div className="font-medium break-words ">
-          {row.original.jobName}
-        </div>
+        <div className="font-medium break-words ">{row.original.jobName}</div>
       ),
     },
     {
@@ -248,7 +247,9 @@ export default function CVListTab({ job }: CVListTabProps) {
             <Button
               size="sm"
               className="bg-green-400 text-white hover:bg-green-600"
-              onClick={() => handleChangeStatus(row.original, CVStatus.ACCEPTED)}
+              onClick={() =>
+                handleChangeStatus(row.original, CVStatus.ACCEPTED)
+              }
             >
               Chấp nhận
             </Button>
@@ -256,7 +257,9 @@ export default function CVListTab({ job }: CVListTabProps) {
               size="sm"
               variant="destructive"
               className="bg-red-500 text-white hover:bg-red-600"
-              onClick={() => handleChangeStatus(row.original, CVStatus.REJECTED)}
+              onClick={() =>
+                handleChangeStatus(row.original, CVStatus.REJECTED)
+              }
             >
               Từ chối
             </Button>

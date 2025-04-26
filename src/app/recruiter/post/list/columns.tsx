@@ -1,6 +1,4 @@
-
 'use client';
-
 
 export const initPosts: Post[] = [
   {

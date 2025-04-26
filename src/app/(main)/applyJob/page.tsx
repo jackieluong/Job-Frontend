@@ -61,11 +61,11 @@ export default function Page() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [appliedJobs, setAppliedJobs] = useState<JobApply[]>([]);
-  
+
   const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize, setPageSize] = useState(5);
-    const pageCount = useRef<number>(0);
-    const totals = useRef<number>(0);
+  const [pageSize, setPageSize] = useState(5);
+  const pageCount = useRef<number>(0);
+  const totals = useRef<number>(0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,14 +88,16 @@ export default function Page() {
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {
+        const response = await fetchAppliedJobsByUser(
+          currentPage + 1,
+          pageSize,
+          null,
+          null,
+        );
 
-          const response = await fetchAppliedJobsByUser(currentPage + 1, pageSize, null, null);
-
-          setAppliedJobs(response.data);
-          pageCount.current = response.totalPage;
-          totals.current = response.totalElement;
-          
-        
+        setAppliedJobs(response.data);
+        pageCount.current = response.totalPage;
+        totals.current = response.totalElement;
       } catch (error) {
         console.error('Error fetching applied jobs:', error);
         toast.error('Error fetching applied jobs');
@@ -104,7 +106,7 @@ export default function Page() {
 
     fetchAppliedJobs();
   }, [currentPage]);
-  
+
   return (
     <div>
       {/* <Header /> */}
@@ -114,10 +116,12 @@ export default function Page() {
           <div className="left-section basis-7/10 h-[fit-content] bg-white rounded-lg px-4 py-4">
             {/* drop menu */}
             <div className="flex justify-between items-center mb-6 relative">
-              <div className='space-y-3'>
-              <h2 className="text-xl font-bold">Việc làm đã ứng tuyển</h2>
+              <div className="space-y-3">
+                <h2 className="text-xl font-bold">Việc làm đã ứng tuyển</h2>
                 <div className=" text-gray-500">
-                  Đã ứng tuyển <span className='text-green-600'>{totals.current}</span>  việc làm
+                  Đã ứng tuyển{' '}
+                  <span className="text-green-600">{totals.current}</span> việc
+                  làm
                 </div>
               </div>
               <div className="relative" ref={dropdownRef}>
@@ -173,11 +177,13 @@ export default function Page() {
                         alt="Logo company"
                       />
                     </div>
-                    <div className='w-full pr-5'>
+                    <div className="w-full pr-5">
                       <div className="flex flex-row justify-between gap-4 mb-2">
                         <div className="text-wrap">
                           <h3 className="text-xl font-semibold mb-1 hover:text-green-600">
-                            <Link href={`/job/${applyJob.job.id}`}>{applyJob.job.name}</Link>
+                            <Link href={`/job/${applyJob.job.id}`}>
+                              {applyJob.job.name}
+                            </Link>
                           </h3>
                           <Link
                             href={`/company/${applyJob.job.companyId}`}
@@ -186,19 +192,25 @@ export default function Page() {
                             {applyJob.job.companyName}
                           </Link>
                           <p className="text-gray-800">
-                            Thời gian ứng tuyển: {formatDateTime(applyJob.createdAt)}
+                            Thời gian ứng tuyển:{' '}
+                            {formatDateTime(applyJob.createdAt)}
                           </p>
                         </div>
                         <div className="text-nowrap">
                           <span className="text-sm text-green-600 font-semibold">
-                            {displayVNDWithPostfix(applyJob.job.salaryFrom)} - {displayVNDWithPostfix(applyJob.job.salaryTo)}
+                            {displayVNDWithPostfix(applyJob.job.salaryFrom)} -{' '}
+                            {displayVNDWithPostfix(applyJob.job.salaryTo)}
                           </span>
                         </div>
                       </div>
                       <div className="flex flex-row justify-between gap-4">
                         <div className="text-gray-500">
                           CV đã ứng tuyển:{' '}
-                          <Link target='_blank' href={applyJob.resume} className="text-green-600 underline">
+                          <Link
+                            target="_blank"
+                            href={applyJob.resume}
+                            className="text-green-600 underline"
+                          >
                             CV tải lên
                           </Link>
                         </div>
@@ -213,7 +225,11 @@ export default function Page() {
                               Nhắn tin
                             </Button>
                           </a>
-                          <Link target='_blank' href={applyJob.resume} className="w-full block">
+                          <Link
+                            target="_blank"
+                            href={applyJob.resume}
+                            className="w-full block"
+                          >
                             <Button
                               variant="default"
                               size="sm"
@@ -226,10 +242,10 @@ export default function Page() {
                       </div>
                       <hr className="mt-4 mb-2" />
                       <p className="text-base text-orange-500">
-                        {applyStatusMap[applyJob.applyStatus]} 
-                        { applyJob.applyStatus !== "PENDING" &&
-                        <span> ({formatDateTime( applyJob.updatedAt)}) </span>
-                        }
+                        {applyStatusMap[applyJob.applyStatus]}
+                        {applyJob.applyStatus !== 'PENDING' && (
+                          <span> ({formatDateTime(applyJob.updatedAt)}) </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -252,8 +268,12 @@ export default function Page() {
                 </div>
               )}
             </div>
-          
-            <Pagination currentPage={currentPage} onPageChange={setCurrentPage} pageCount={pageCount.current} />
+
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              pageCount={pageCount.current}
+            />
           </div>
 
           {/* Right section */}

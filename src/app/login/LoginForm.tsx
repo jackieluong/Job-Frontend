@@ -36,14 +36,14 @@ export default function AuthForm() {
   //   }
   // }, [isSuccess, isError]);
   const isPending = false;
-  const {setUser} = useAuth();
+  const { setUser } = useAuth();
   const onSubmit = async (formData: any) => {
     // mutation.mutate(formData);
     try {
       const responseData = await AuthService.login(formData).then(
         (response) => response.data,
       );
-      
+
       const loginUser: UserInfo = {
         id: responseData.user.id,
         name: responseData.user.name,
@@ -51,8 +51,7 @@ export default function AuthForm() {
         role: responseData.user.role,
       };
       console.log('Login user: ', loginUser);
-      
-      
+
       setUser(loginUser);
 
       localStorage.setItem(
@@ -73,19 +72,22 @@ export default function AuthForm() {
         router.push('/home');
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || error?.message || 'Đăng nhập thất bại!', {
-        position: 'top-center',
-      });
+      toast.error(
+        error?.data?.message || error?.message || 'Đăng nhập thất bại!',
+        {
+          position: 'top-center',
+        },
+      );
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_AUTHORIZATION_URL}`
-    }catch (error) {
+      window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_AUTHORIZATION_URL}`;
+    } catch (error) {
       console.error('Google login error:', error);
     }
-  }
+  };
   return (
     <div className="min-h-screen flex justify-center items-center">
       {/* Form login */}
@@ -97,47 +99,54 @@ export default function AuthForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
             <div>
               <label className="block text-sm font-medium">Email</label>
-                <input
-                  type="email"
-                  {...register('email', { required: 'Email không được để trống' })}
-                  className="mt-1 w-full px-3 py-2 border rounded-md"
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email.message}</p>
-                )}
-              </div>
+              <input
+                type="email"
+                {...register('email', {
+                  required: 'Email không được để trống',
+                })}
+                className="mt-1 w-full px-3 py-2 border rounded-md"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </div>
 
-              <div className="mt-4">
-                <label className="block text-sm font-medium">Mật khẩu</label>
-                <input
-                  type="password"
-                  {...register('password', {
-                    required: 'Mật khẩu không được để trống',
-                  })}
-                  className="mt-1 w-full px-3 py-2 border rounded-md"
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password.message}</p>
-                )}
-              </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Mật khẩu</label>
+              <input
+                type="password"
+                {...register('password', {
+                  required: 'Mật khẩu không được để trống',
+                })}
+                className="mt-1 w-full px-3 py-2 border rounded-md"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
-              <Button
-                type="submit"
-                variant="default"
-                className="w-full text-white py-2 mt-4 rounded-md"
-              >
-                {isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
-              </Button>
-            </form>
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full text-white py-2 mt-4 rounded-md"
+            >
+              {isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
+            </Button>
+          </form>
 
           <div className="flex gap-2 mt-4">
-            <button className="flex-1 bg-red-500 text-white py-2 rounded-md" onClick={handleGoogleLogin}>
+            <button
+              className="flex-1 bg-red-500 text-white py-2 rounded-md"
+              onClick={handleGoogleLogin}
+            >
               Google
             </button>
-            <button className="flex-1 bg-blue-600 text-white py-2 rounded-md">
+            <button className="flex-1 bg-green-600 text-white py-2 rounded-md">
               Facebook
             </button>
-            <button className="flex-1 bg-blue-800 text-white py-2 rounded-md">
+            <button className="flex-1 bg-green-800 text-white py-2 rounded-md">
               LinkedIn
             </button>
           </div>

@@ -127,8 +127,8 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const totalCVs = useRef<number>(0);
   const pageCount = useRef<number>(0);
-  
-  const{user} = useAuth();
+
+  const { user } = useAuth();
 
   // const fetchPosts = useCallback( async () => {
   //   try {
@@ -146,27 +146,32 @@ export default function Page() {
   //   }
   // },[]);
 
-  const fetchPosts =  async () => {
+  const fetchPosts = async () => {
     try {
       setIsLoading(true);
       if (!user) return;
-      const data = await getCVByCompany(user.id || -1, searchKeyword.current, cvStatus, currentPage + 1, pageSize, null, null,
+      const data = await getCVByCompany(
+        user.id || -1,
+        searchKeyword.current,
+        cvStatus,
+        currentPage + 1,
+        pageSize,
+        null,
+        null,
       );
 
       totalCVs.current = data.totalElement;
       pageCount.current = data.totalPage;
       setCvs(data.data);
-
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
   };
-    useEffect(() => {
-      
-      fetchPosts();
-      setIsLoading(false);
-    }, [currentPage, pageSize, user, cvStatus]);
-  
+  useEffect(() => {
+    fetchPosts();
+    setIsLoading(false);
+  }, [currentPage, pageSize, user, cvStatus]);
+
   // const handleSearchClick = (keyword: string) => {
   //     keyword = keyword.trim();
   //   console.log(keyword);
@@ -199,18 +204,16 @@ export default function Page() {
     setCvStatus(value);
     setCurrentPage(0);
   };
- const handleChangeStatus = async (cv: CV, newStatus: string) => {
-     setCvs((prevCvs) =>
-       prevCvs.map((item) =>
-         item.id == cv.id ? { ...item, applyStatus: newStatus } : item,
-       ),
-     );
- 
+  const handleChangeStatus = async (cv: CV, newStatus: string) => {
+    setCvs((prevCvs) =>
+      prevCvs.map((item) =>
+        item.id == cv.id ? { ...item, applyStatus: newStatus } : item,
+      ),
+    );
+
     await updateCVStatus(Number.parseInt(cv.id), newStatus);
-    
-     
-   };
-  
+  };
+
   const handleClickViewCV = (cv: CV) => {
     if (cv.applyStatus === CVStatus.PENDING) {
       handleChangeStatus(cv, CVStatus.SEEN);
@@ -316,7 +319,9 @@ export default function Page() {
             <Button
               size="sm"
               className="bg-green-400 text-white hover:bg-green-600"
-              onClick={() => handleChangeStatus(row.original, CVStatus.ACCEPTED )}
+              onClick={() =>
+                handleChangeStatus(row.original, CVStatus.ACCEPTED)
+              }
             >
               Chấp nhận
             </Button>
@@ -324,7 +329,9 @@ export default function Page() {
               size="sm"
               variant="destructive"
               className="bg-red-500 text-white hover:bg-red-600"
-              onClick={() => handleChangeStatus(row.original, CVStatus.REJECTED)}
+              onClick={() =>
+                handleChangeStatus(row.original, CVStatus.REJECTED)
+              }
             >
               Từ chối
             </Button>
@@ -341,7 +348,6 @@ export default function Page() {
   //   return cv.applyStatus === cvStatus;
   // });
 
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -349,7 +355,6 @@ export default function Page() {
       </div>
     );
   }
-
 
   return (
     <div className="lg:mx-auto w-full lg:w-3/4">
@@ -363,7 +368,7 @@ export default function Page() {
               <Button
                 onClick={() => handleSearchClick()}
                 variant="ghost"
-                className="py-0 px-1  absolute hover:bg-blue-200  top-1/2 -translate-y-1/2 w-10 h-13 text-gray-400"
+                className="py-0 px-1  absolute hover:bg-green-200  top-1/2 -translate-y-1/2 w-10 h-13 text-gray-400"
               >
                 <Search className="w-10 h-10" />
               </Button>
@@ -409,8 +414,6 @@ export default function Page() {
             pageSize={pageSize}
             onPageSizeChange={setPageSize}
             pageCount={pageCount.current}
-
-
           />
         </CardContent>
       </Card>

@@ -263,7 +263,7 @@ export const getJobForHomepage = async ({ currentPage, pageSize, sortBy, ascendi
 }) => {
   try {
     const response = await axiosInstance.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs/save`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/jobs`,
       {
         params: {
           currentPage,

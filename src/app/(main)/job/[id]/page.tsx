@@ -18,8 +18,10 @@ import { useAuth } from '@/store/userStore';
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { displayVNDWithPostfix } from '@/lib/utils';
-import ApplyDialog, { ApplyDialogRef } from '@/components/applyDialog/ApplyDialog';
+import { displayVNDWithPostfix, formatDateTime } from '@/lib/utils';
+import ApplyDialog, {
+  ApplyDialogRef,
+} from '@/components/applyDialog/ApplyDialog';
 
 export interface JobDetail {
   id: number;
@@ -52,6 +54,8 @@ export interface JobDetail {
   quantity: number;
   industry: string;
   saved: boolean;
+  appliedAt: string;
+  resume: string;
 }
 
 function formattedDate(isoDate: string | undefined) {
@@ -87,7 +91,7 @@ export default function cvdetail() {
         // const dataRelatedJob = await getJobRelatedlById(Number(id), job.name).then(
         //   (res) => res.data,
         // );
-        
+
         setIsSaved(dataJob.saved);
         // setRelatedJob(dataRelatedJob);
       } catch (error) {
@@ -101,9 +105,10 @@ export default function cvdetail() {
     const fetchRelatedJob = async () => {
       if (!job) return;
       try {
-        const dataRelatedJob = await getJobRelatedlById(Number(id), job.name).then(
-          (res) => res.data,
-        );
+        const dataRelatedJob = await getJobRelatedlById(
+          Number(id),
+          job.name,
+        ).then((res) => res.data);
         setRelatedJob(dataRelatedJob);
       } catch (error) {
         console.log('error: ', error);
@@ -111,7 +116,6 @@ export default function cvdetail() {
     };
 
     fetchRelatedJob();
-
   }, [job]);
   const handleSaveClick = async (id: number) => {
     if (!user) {
@@ -146,8 +150,7 @@ export default function cvdetail() {
       alert('Bạn cần đăng nhập để ứng tuyển');
       return;
     }
-    applyDialogRef.current?.openDialog(job);
-
+    if(!job?.appliedAt) applyDialogRef.current?.openDialog(job);
   };
 
   return (
@@ -215,13 +218,15 @@ export default function cvdetail() {
                   Hạn nộp hồ sơ: {formattedDate(job?.deadline)}
                 </div>
                 <div className="flex flex-row w-full gap-4 mt-1">
+                  
                   <Button
+                    // disabled={job?.appliedAt != null}
                     onClick={handleClickApply}
                     variant="default"
                     size="lg"
                     className="w-full"
                   >
-                    Ứng tuyển
+                    {job?.appliedAt ? <p className='text-gray-800 font-bold'> Đã ứng tuyển vào  {formatDateTime(job.appliedAt)}</p> : 'Ứng tuyển'}
                   </Button>
                   <div>
                     <Button
@@ -453,7 +458,7 @@ export default function cvdetail() {
         </div>
       </div>
       {/* Apply Dialog */}
-      <ApplyDialog ref={applyDialogRef }  />
+      <ApplyDialog ref={applyDialogRef} />
     </div>
   );
 }
