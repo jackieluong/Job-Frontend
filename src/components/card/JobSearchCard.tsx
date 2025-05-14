@@ -9,13 +9,15 @@ import { industryMap } from '@/data/map';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/store/userStore';
 import { saveJob } from '@/services/jobService';
+import toast from 'react-hot-toast';
 
 type JobSearchCardProps = {
   // Define your props here
   job: JobSearchInfo;
+  handleClickSave: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, job: JobSearchInfo) => void;
 };
 
-export default function JobSearchCard({ job }: JobSearchCardProps) {
+export default function JobSearchCard({ job, handleClickSave }: JobSearchCardProps) {
   const router = useRouter();
 
   const handleClickJobName = (e) => {
@@ -46,24 +48,24 @@ export default function JobSearchCard({ job }: JobSearchCardProps) {
     }
   };
 
-  const handleClickSave = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    e.stopPropagation(); // Prevent the click event from bubbling up to the job name
-    if (!isAuthenticated) {
-      alert('Bạn cần đăng nhập để lưu việc làm');
-      // router.push("/login")
-    } else {
-      // Handle save job logic
-
-      const response = await saveJob(job.id);
-      if (response.success == true) {
-        alert('Lưu việc làm thành công ');
-      } else {
-        alert('Đã xảy ra lỗi, vui lòng thử lại sau');
-      }
-    }
-  };
+  // const handleClickSave = async (
+  //   e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  // ) => {
+  //   e.stopPropagation(); // Prevent the click event from bubbling up to the job name
+  //   if (!isAuthenticated) {
+  //     alert('Bạn cần đăng nhập để lưu việc làm');
+  //     // router.push("/login")
+  //   } else {
+  //     // Handle save job logic
+  //     job.saved = !job.saved;
+  //     const response = await saveJob(job.id);
+  //     if (response.success == true) {
+  //       toast.success('Lưu việc làm thành công ');
+  //     } else {
+  //       toast.error('Đã xảy ra lỗi, vui lòng thử lại sau');
+  //     }
+  //   }
+  // };
 
   return (
     <div className="group rounded-xl cursor-pointer min-h-28  bg-white p-3 border-1 border-green-300 transition hover:border-green-600 hover:opacity-90">
@@ -132,7 +134,7 @@ export default function JobSearchCard({ job }: JobSearchCardProps) {
                 )}
               </div>
               <button
-                onClick={(e) => handleClickSave(e)}
+                onClick={(e) => handleClickSave(e, job)}
                 className={`${job.saved ? 'bg-green-500 text-white' : ''} cursor-pointer rounded-full border border-green-500 w-8 h-8 flex items-center justify-center hover:bg-green-500 hover:text-white transition`}
               >
                 <Heart className="h-4 w-4" />

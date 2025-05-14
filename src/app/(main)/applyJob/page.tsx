@@ -11,6 +11,9 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { displayVNDWithPostfix, formatDateTime } from '@/lib/utils';
 import Pagination from '@/components/pagination/Pagination';
+import { useRouter } from 'next/navigation';
+import { useChat } from '@/store/chatStore';
+import { useAuth } from '@/store/userStore';
 const statuses = [
   { id: 'applied', label: 'Đã ứng tuyển' },
   { id: 'viewed', label: 'NTD đã xem hồ sơ' },
@@ -67,6 +70,7 @@ export default function Page() {
   const pageCount = useRef<number>(0);
   const totals = useRef<number>(0);
 
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -107,6 +111,27 @@ export default function Page() {
     fetchAppliedJobs();
   }, [currentPage]);
 
+  const { addConversation } = useChat();
+  const router = useRouter();
+
+  const { user } = useAuth();
+  
+  const handleClickChat = (applyJob: JobApply) => {
+    addConversation(
+      {
+        id: Number(applyJob.job.companyId) || -1,
+        name: applyJob.job.companyName || '',
+        role: "COMPANY" 
+      },
+      user?.id || -1,
+    );
+    setTimeout(() => {
+      router.push('/chat');
+    }, 500); // Delay to ensure state updates before navigating
+
+    // router.push("/chat");
+  };
+  
   return (
     <div>
       {/* <Header /> */}
@@ -220,6 +245,7 @@ export default function Page() {
                               variant="default"
                               size="sm"
                               className="w-full rounded-full bg-green-100 text-green-600 hover:bg-green-200"
+                              onClick={() =>handleClickChat(applyJob)}
                             >
                               <MessageSquare />
                               Nhắn tin

@@ -1,13 +1,17 @@
 import JobSearchCard from '@/components/card/JobSearchCard';
 import Pagination from '@/components/pagination/Pagination';
 import { JobSearchInfo } from '@/lib/type';
+import { deleteSaveJob, saveJob } from '@/services/jobService';
+import { useAuth } from '@/store/userStore';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 import React from 'react';
+import toast from 'react-hot-toast';
 
 type JobSectionProps = {
   // Define your props here
   jobs: JobSearchInfo[] | null;
+  setJobs: React.Dispatch<React.SetStateAction<JobSearchInfo[] | null>>;
   isLoading: boolean;
   // setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   pageCount: number;
@@ -98,7 +102,42 @@ type JobSectionProps = {
 //   },
 // ];
 
-export default function JobSection({ jobs, isLoading, pageCount,  currentPage, onPageChange }: JobSectionProps) {
+export default function JobSection({ jobs, setJobs,isLoading, pageCount,  currentPage, onPageChange }: JobSectionProps) {
+  
+
+const { isAuthenticated } = useAuth();
+
+   const handleClickSave = async (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>, job: JobSearchInfo
+    ) => {
+      e.stopPropagation(); // Prevent the click event from bubbling up to the job name
+      if (!isAuthenticated) {
+        alert('Bạn cần đăng nhập để lưu việc làm');
+        // router.push("/login")
+      } else {
+        // Handle save job logic
+        let response;
+        let msg;
+        if(job.saved == true){
+          response = await deleteSaveJob(job.id);
+          msg = "Bỏ lưu việc thành công"
+          
+        }else{
+          response = await saveJob(job.id);
+          msg = "Lưu việc làm thành công";
+        }
+        
+        if (response.success == true) {
+          
+          setJobs((jobs) => jobs === null ? null : 
+          jobs.map((j) => (j.id === job.id ? { ...j, saved: !j.saved } : j)))
+
+          toast.success(msg);
+        } else {
+          toast.error('Đã xảy ra lỗi, vui lòng thử lại sau');
+        }
+      }
+    };
   
   if (isLoading) {
     return (
@@ -112,7 +151,7 @@ export default function JobSection({ jobs, isLoading, pageCount,  currentPage, o
     <>
     <div className="grid grid-cols-1 xl:lg:grid-cols-2 gap-4">
       {jobs?.map((job, index) => (
-        <JobSearchCard key={index} job={job} />
+        <JobSearchCard key={index} job={job} handleClickSave={handleClickSave}/>
       ))}
     </div>
      {/* Pagination */}

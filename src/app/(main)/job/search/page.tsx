@@ -187,6 +187,7 @@ export default function page(props: pageProps) {
           <div className="mt-6">
             <JobSection
               jobs={jobs}
+              setJobs={setJobs}
               currentPage={currentPage}
               isLoading={isLoading}
               pageCount={pageCount.current}

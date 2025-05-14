@@ -76,6 +76,7 @@ export default function ChatPage() {
   // }, [messages]);
   useEffect(() => {
     const connect = () => {
+      
       if (stompClientRef.current !== null) return;
 
       const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
