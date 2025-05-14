@@ -12,6 +12,7 @@ import { MessageReceived, MessageSend } from '@/lib/type';
 import { useAuth } from '@/store/userStore';
 import { formatDateTime } from '@/lib/utils';
 import ChatService from '@/services/chatService';
+import { webSocketService } from '@/lib/webSocketService';
 
 // Dummy data for users and messages
 // const users = [
@@ -74,81 +75,102 @@ export default function ChatPage() {
   //     // const conversationExist = conversations.some((conversation) => conversation.id === lastMessage.);
 
   // }, [messages]);
+  // useEffect(() => {
+  //   const connect = () => {
+
+  //     if (stompClientRef.current !== null) return;
+
+  //     const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
+  //     const client = new Client({
+  //       webSocketFactory: () => socket,
+  //       connectHeaders: {
+  //         Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
+  //       },
+  //       debug: (str) => {
+  //         console.log('STOMP Debug:', str);
+  //       },
+
+  //       onConnect: (frame) => {
+  //         // console.log("Connected to WebSocket, session ID:", frame.headers);
+  //         console.log('Connected to WebSocket, headers:', frame.headers);
+  //         client.subscribe(
+  //           process.env.NEXT_PUBLIC_PRIVATE_QUEUE_SUB_URL || '',
+  //           (message) => {
+  //             console.log('Received message:', JSON.parse(message.body));
+  //             const receivedMessage: MessageReceived = JSON.parse(message.body);
+  //             //   const newMessage: Message = {
+  //             //     senderId: receivedMessage.senderId,
+  //             //     senderName: receivedMessage.senderName,
+  //             //     senderRole: receivedMessage.senderRole,
+  //             //     content:receivedMessage.content,
+  //             //     timeStamp: receivedMessage.timeStamp
+  //             //   }
+  //             const conId: number = receivedMessage.conversationId;
+  //             if (!conId) return;
+  //             // const messagesMap: MessageMap = {
+  //             //     ...messages,
+  //             //     [conId] : [...(messages[conId] || []), receivedMessage]
+  //             // }
+
+  //             setMessages((prev) => {
+  //               return {
+  //                 ...prev,
+  //                 [conId]: [...(prev[conId] || []), receivedMessage],
+  //               };
+  //             });
+  //           },
+  //         );
+  //       },
+
+  //       onDisconnect: () => {
+  //         console.log('Disconnected from WebSocket on ondisconnect func');
+  //       },
+  //       onStompError: (frame) => {
+  //         console.error('Broker reported error: ' + frame.headers['message']);
+  //         console.error('Additional details: ' + frame.body);
+  //       },
+  //     });
+  //     client.activate();
+  //     // setStompClient(client);
+  //     stompClientRef.current = client;
+  //   };
+
+  //   connect();
+
+  //   return () => {
+  //     // Cleanup function
+  //     if (stompClientRef.current) {
+  //       stompClientRef.current?.deactivate();
+  //       stompClientRef.current = null;
+  //       console.log('Disconnected from WebSocket');
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const connect = () => {
-      
-      if (stompClientRef.current !== null) return;
+    // Connect to WebSocket
+    webSocketService.connect();
 
-      const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
-      const client = new Client({
-        webSocketFactory: () => socket,
-        connectHeaders: {
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
-        },
-        debug: (str) => {
-          console.log('STOMP Debug:', str);
-        },
+    // Subscribe to private message queue
+    const unsubscribe = webSocketService.subscribe<MessageReceived>(
+      process.env.NEXT_PUBLIC_PRIVATE_QUEUE_SUB_URL || '',
+      (receivedMessage) => {
+        console.log('Received message:', receivedMessage);
+        const conId = receivedMessage.conversationId;
+        if (!conId) return;
+        setMessages((prev) => ({
+          ...prev,
+          [conId]: [...(prev[conId] || []), receivedMessage],
+        }));
+      },
+    );
 
-        onConnect: (frame) => {
-          // console.log("Connected to WebSocket, session ID:", frame.headers);
-          console.log('Connected to WebSocket, headers:', frame.headers);
-          client.subscribe(
-            process.env.NEXT_PUBLIC_PRIVATE_QUEUE_SUB_URL || '',
-            (message) => {
-              console.log('Received message:', JSON.parse(message.body));
-              const receivedMessage: MessageReceived = JSON.parse(message.body);
-              //   const newMessage: Message = {
-              //     senderId: receivedMessage.senderId,
-              //     senderName: receivedMessage.senderName,
-              //     senderRole: receivedMessage.senderRole,
-              //     content:receivedMessage.content,
-              //     timeStamp: receivedMessage.timeStamp
-              //   }
-              const conId: number = receivedMessage.conversationId;
-              if (!conId) return;
-              // const messagesMap: MessageMap = {
-              //     ...messages,
-              //     [conId] : [...(messages[conId] || []), receivedMessage]
-              // }
-
-              setMessages((prev) => {
-                return {
-                  ...prev,
-                  [conId]: [...(prev[conId] || []), receivedMessage],
-                };
-              });
-            },
-          );
-        },
-
-        onDisconnect: () => {
-          console.log('Disconnected from WebSocket on ondisconnect func');
-        },
-        onStompError: (frame) => {
-          console.error('Broker reported error: ' + frame.headers['message']);
-          console.error('Additional details: ' + frame.body);
-        },
-      });
-      client.activate();
-      // setStompClient(client);
-      stompClientRef.current = client;
-    };
-
-    connect();
-
+    // Cleanup on unmount
     return () => {
-      // Cleanup function
-      if (stompClientRef.current) {
-        stompClientRef.current?.deactivate();
-        stompClientRef.current = null;
-        console.log('Disconnected from WebSocket');
-      }
+      unsubscribe();
     };
   }, []);
 
-  console.log('conversation: ', conversation);
-
-  console.log('Messages:', messages);
   const handleConversationClick = async (clickedConversation: Conversation) => {
     setConversation(clickedConversation);
     // setMessages(messagesData[userId] || []);
@@ -194,10 +216,16 @@ export default function ChatPage() {
 
     // send message
 
-    stompClientRef.current?.publish({
-      destination: process.env.NEXT_PUBLIC_PRIVATE_QUEUE_PUB_URL || '',
-      body: JSON.stringify(message),
-    });
+    // stompClientRef.current?.publish({
+    //   destination: process.env.NEXT_PUBLIC_PRIVATE_QUEUE_PUB_URL || '',
+    //   body: JSON.stringify(message),
+    // });
+
+    // Publish message
+    webSocketService.publish(
+      process.env.NEXT_PUBLIC_PRIVATE_QUEUE_PUB_URL || '',
+      message,
+    );
     // const updatedMessages = [...messages, { sender: 'Bạn', text: newMessage }];
 
     // const updatedMessages: MessageReceived[] = [

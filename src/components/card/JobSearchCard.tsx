@@ -14,10 +14,16 @@ import toast from 'react-hot-toast';
 type JobSearchCardProps = {
   // Define your props here
   job: JobSearchInfo;
-  handleClickSave: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, job: JobSearchInfo) => void;
+  handleClickSave: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    job: JobSearchInfo,
+  ) => void;
 };
 
-export default function JobSearchCard({ job, handleClickSave }: JobSearchCardProps) {
+export default function JobSearchCard({
+  job,
+  handleClickSave,
+}: JobSearchCardProps) {
   const router = useRouter();
 
   const handleClickJobName = (e) => {

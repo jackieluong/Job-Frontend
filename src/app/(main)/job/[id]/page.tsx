@@ -150,7 +150,7 @@ export default function cvdetail() {
       alert('Bạn cần đăng nhập để ứng tuyển');
       return;
     }
-    if(!job?.appliedAt) applyDialogRef.current?.openDialog(job);
+    if (!job?.appliedAt) applyDialogRef.current?.openDialog(job);
   };
 
   return (
@@ -218,7 +218,6 @@ export default function cvdetail() {
                   Hạn nộp hồ sơ: {formattedDate(job?.deadline)}
                 </div>
                 <div className="flex flex-row w-full gap-4 mt-1">
-                  
                   <Button
                     // disabled={job?.appliedAt != null}
                     onClick={handleClickApply}
@@ -226,7 +225,14 @@ export default function cvdetail() {
                     size="lg"
                     className="w-full"
                   >
-                    {job?.appliedAt ? <p className='text-gray-800 font-bold'> Đã ứng tuyển vào  {formatDateTime(job.appliedAt)}</p> : 'Ứng tuyển'}
+                    {job?.appliedAt ? (
+                      <p className="text-gray-800 font-bold">
+                        {' '}
+                        Đã ứng tuyển vào {formatDateTime(job.appliedAt)}
+                      </p>
+                    ) : (
+                      'Ứng tuyển'
+                    )}
                   </Button>
                   <div>
                     <Button

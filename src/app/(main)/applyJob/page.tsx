@@ -70,7 +70,6 @@ export default function Page() {
   const pageCount = useRef<number>(0);
   const totals = useRef<number>(0);
 
-  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -115,13 +114,13 @@ export default function Page() {
   const router = useRouter();
 
   const { user } = useAuth();
-  
+
   const handleClickChat = (applyJob: JobApply) => {
     addConversation(
       {
         id: Number(applyJob.job.companyId) || -1,
         name: applyJob.job.companyName || '',
-        role: "COMPANY" 
+        role: 'COMPANY',
       },
       user?.id || -1,
     );
@@ -131,7 +130,7 @@ export default function Page() {
 
     // router.push("/chat");
   };
-  
+
   return (
     <div>
       {/* <Header /> */}
@@ -245,7 +244,7 @@ export default function Page() {
                               variant="default"
                               size="sm"
                               className="w-full rounded-full bg-green-100 text-green-600 hover:bg-green-200"
-                              onClick={() =>handleClickChat(applyJob)}
+                              onClick={() => handleClickChat(applyJob)}
                             >
                               <MessageSquare />
                               Nhắn tin

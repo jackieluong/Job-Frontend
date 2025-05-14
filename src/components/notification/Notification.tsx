@@ -26,6 +26,7 @@ import { formatDateTime } from '@/lib/utils';
 import { fetchNotifications } from '@/services/notificationService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { webSocketService } from '@/lib/webSocketService';
 
 type Notification = {
   id: string;
@@ -52,64 +53,91 @@ export default function NotificationDropdown() {
     fetchUserNotifications();
   }, []);
 
+  // useEffect(() => {
+  //   const connect = () => {
+  //     if (stompClientRef.current !== null) return;
+
+  //     const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
+  //     const client = new Client({
+  //       webSocketFactory: () => socket,
+  //       connectHeaders: {
+  //         Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
+  //       },
+  //       debug: (str) => {
+  //         console.log('STOMP Debug:', str);
+  //       },
+
+  //       onConnect: (frame) => {
+  //         // console.log("Connected to WebSocket, session ID:", frame.headers);
+  //         console.log('Connected to WebSocket, headers:', frame.headers);
+  //         client.subscribe(
+  //           process.env.NEXT_PUBLIC_PRIVATE_QUEUE_NOTIFICATION || '',
+  //           (message) => {
+  //             console.log('Received message:', JSON.parse(message.body));
+  //             const receivedMessage: Notification = JSON.parse(message.body);
+  //             const newNotification: Notification = {
+  //               id: receivedMessage.id,
+  //               title: receivedMessage.title,
+  //               message: receivedMessage.message,
+  //               read: false,
+  //               link: receivedMessage.link,
+  //               createdAt: receivedMessage.createdAt,
+  //             };
+
+  //             setNotifications((prev) => [...prev, newNotification]);
+  //           },
+  //         );
+  //       },
+
+  //       onDisconnect: () => {
+  //         console.log('Disconnected from WebSocket on ondisconnect func');
+  //       },
+  //       onStompError: (frame) => {
+  //         console.error('Broker reported error: ' + frame.headers['message']);
+  //         console.error('Additional details: ' + frame.body);
+  //       },
+  //     });
+  //     client.activate();
+  //     // setStompClient(client);
+  //     stompClientRef.current = client;
+  //   };
+
+  //   connect();
+
+  //   return () => {
+  //     // Cleanup function
+  //     if (stompClientRef.current) {
+  //       stompClientRef.current?.deactivate();
+  //       stompClientRef.current = null;
+  //       console.log('Disconnected from WebSocket');
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const connect = () => {
-      if (stompClientRef.current !== null) return;
+    // Connect to WebSocket
+    webSocketService.connect();
 
-      const socket = new SockJS(process.env.NEXT_PUBLIC_WEBSOCKET_URL || '');
-      const client = new Client({
-        webSocketFactory: () => socket,
-        connectHeaders: {
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem('accessToken'))}`, // Assuming token is stored in localStorage
-        },
-        debug: (str) => {
-          console.log('STOMP Debug:', str);
-        },
+    // Subscribe to notification queue
+    const unsubscribe = webSocketService.subscribe<Notification>(
+      process.env.NEXT_PUBLIC_PRIVATE_QUEUE_NOTIFICATION || '',
+      (receivedMessage) => {
+        console.log('Received notification:', receivedMessage);
+        const newNotification: Notification = {
+          id: receivedMessage.id,
+          title: receivedMessage.title,
+          message: receivedMessage.message,
+          read: false,
+          link: receivedMessage.link,
+          createdAt: receivedMessage.createdAt,
+        };
+        setNotifications((prev) => [...prev, newNotification]);
+      },
+    );
 
-        onConnect: (frame) => {
-          // console.log("Connected to WebSocket, session ID:", frame.headers);
-          console.log('Connected to WebSocket, headers:', frame.headers);
-          client.subscribe(
-            process.env.NEXT_PUBLIC_PRIVATE_QUEUE_NOTIFICATION || '',
-            (message) => {
-              console.log('Received message:', JSON.parse(message.body));
-              const receivedMessage: Notification = JSON.parse(message.body);
-              const newNotification: Notification = {
-                id: receivedMessage.id,
-                title: receivedMessage.title,
-                message: receivedMessage.message,
-                read: false,
-                link: receivedMessage.link,
-                createdAt: receivedMessage.createdAt,
-              };
-
-              setNotifications((prev) => [...prev, newNotification]);
-            },
-          );
-        },
-
-        onDisconnect: () => {
-          console.log('Disconnected from WebSocket on ondisconnect func');
-        },
-        onStompError: (frame) => {
-          console.error('Broker reported error: ' + frame.headers['message']);
-          console.error('Additional details: ' + frame.body);
-        },
-      });
-      client.activate();
-      // setStompClient(client);
-      stompClientRef.current = client;
-    };
-
-    connect();
-
+    // Cleanup on unmount
     return () => {
-      // Cleanup function
-      if (stompClientRef.current) {
-        stompClientRef.current?.deactivate();
-        stompClientRef.current = null;
-        console.log('Disconnected from WebSocket');
-      }
+      unsubscribe();
     };
   }, []);
 

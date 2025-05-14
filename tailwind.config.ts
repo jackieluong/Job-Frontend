@@ -14,6 +14,7 @@ export default {
 	},
   	extend: {
   		colors: {
+			royalblue: '#003699',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
